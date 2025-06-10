@@ -3,7 +3,7 @@ dotnet add package Microsoft.EntityFrameworkCore.Design
 dotnet add package Microsoft.EntityFrameworkCore.Tools
 dotnet ef dbcontext scaffold "Server=<<servername>>;Database=APDatadb;Trusted_Connection=True;TrustServerCertificate=True;" Microsoft.EntityFrameworkCore.SqlServer -o Models
  
-dotnet ef dbcontext scaffold "Server=<INGRESAR SERVIDOR MSSQL>;Database=WeatherDB;Trusted_Connection=True;TrustServerCertificate=True;" Microsoft.EntityFrameworkCore.SqlServer -o Models
+dotnet ef dbcontext scaffold "Server=localhost;Database=WeatherDB;Trusted_Connection=True;TrustServerCertificate=True;" Microsoft.EntityFrameworkCore.SqlServer -o Models
  
 dotnet tool install --global dotnet-ef
 dotnet tool update --global dotnet-ef
