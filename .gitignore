@@ -1,0 +1,33 @@
+# Archivos generados por Visual Studio
+.vs/
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+
+# Resultados de compilación
+bin/
+obj/
+Debug/
+Release/
+*.exe
+*.dll
+*.pdb
+
+# Archivos de NuGet
+packages/
+*.nupkg
+.nuget/
+
+# Otros
+*.cache
+*.log
+*.bak
+
+
+# Archivos de publicación
+publish/
+wwwroot/
+
+# Archivos de configuración de usuario
+#appsettings.*.json
