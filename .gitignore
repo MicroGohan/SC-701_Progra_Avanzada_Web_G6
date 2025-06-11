@@ -4,7 +4,13 @@
 *.user
 *.userosscache
 *.sln.docstates
-
+# Refuerzo para archivos de Visual Studio
+.vs/WD/FileContentIndex/
+.vs/WD/v17/.suo
+.vs/WD/DesignTimeBuild/
+.vs/ProjectEvaluation/
+*.vsidx
+*.db
 # Resultados de compilación
 bin/
 obj/
@@ -29,5 +35,13 @@ packages/
 publish/
 wwwroot/
 
-# Archivos de configuración de usuario
-#appsettings.*.json
+
+# Visual Studio files
+**/.vs/
+**/*.suo
+**/*.user
+**/*.userosscache
+**/*.vsidx
+**/*.db
+**/.dtbcache.v2
+**/DocumentLayout.*.json
