@@ -45,3 +45,4 @@ wwwroot/
 **/*.db
 **/.dtbcache.v2
 **/DocumentLayout.*.json
+WD/WD.Data/Resources/DBScripts.txt

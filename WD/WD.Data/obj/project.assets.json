@@ -4726,23 +4726,23 @@
     ]
   },
   "packageFolders": {
-    "C:\\Users\\Liwson\\.nuget\\packages\\": {},
+    "C:\\Users\\NataliaAbarcaMadriga\\.nuget\\packages\\": {},
     "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\Liwson\\source\\repos\\SC-701_Progra_Avanzada_Web_G6\\WD\\WD.Data\\WD.Data.csproj",
+      "projectUniqueName": "C:\\Users\\NataliaAbarcaMadriga\\OneDrive - IBM\\Documents\\U\\Progra Avanzada Web\\Proyecto\\SC-701_Progra_Avanzada_Web_G6\\WD\\WD.Data\\WD.Data.csproj",
       "projectName": "WD.Data",
-      "projectPath": "C:\\Users\\Liwson\\source\\repos\\SC-701_Progra_Avanzada_Web_G6\\WD\\WD.Data\\WD.Data.csproj",
-      "packagesPath": "C:\\Users\\Liwson\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\Liwson\\source\\repos\\SC-701_Progra_Avanzada_Web_G6\\WD\\WD.Data\\obj\\",
+      "projectPath": "C:\\Users\\NataliaAbarcaMadriga\\OneDrive - IBM\\Documents\\U\\Progra Avanzada Web\\Proyecto\\SC-701_Progra_Avanzada_Web_G6\\WD\\WD.Data\\WD.Data.csproj",
+      "packagesPath": "C:\\Users\\NataliaAbarcaMadriga\\.nuget\\packages\\",
+      "outputPath": "C:\\Users\\NataliaAbarcaMadriga\\OneDrive - IBM\\Documents\\U\\Progra Avanzada Web\\Proyecto\\SC-701_Progra_Avanzada_Web_G6\\WD\\WD.Data\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
       ],
       "configFilePaths": [
-        "C:\\Users\\Liwson\\AppData\\Roaming\\NuGet\\NuGet.Config",
+        "C:\\Users\\NataliaAbarcaMadriga\\AppData\\Roaming\\NuGet\\NuGet.Config",
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
       ],
@@ -4824,7 +4824,7 @@
             "privateAssets": "all"
           }
         },
-        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.203/PortableRuntimeIdentifierGraph.json"
+        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.201/PortableRuntimeIdentifierGraph.json"
       }
     }
   }
