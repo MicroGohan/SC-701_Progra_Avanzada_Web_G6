@@ -1,7 +1,7 @@
 # Archivos generados por Visual Studio
-.vs/
-*.suo
-*.user
+**.vs/
+**.suo
+**.user
 *.userosscache
 *.sln.docstates
 # Refuerzo para archivos de Visual Studio
@@ -12,8 +12,8 @@
 *.vsidx
 *.db
 # Resultados de compilación
-bin/
-obj/
+**bin/
+**obj/
 Debug/
 Release/
 *.exe
