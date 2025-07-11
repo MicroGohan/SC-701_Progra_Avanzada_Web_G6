@@ -46,3 +46,4 @@ wwwroot/
 **/.dtbcache.v2
 **/DocumentLayout.*.json
 WD/WD.Data/Resources/DBScripts.txt
+WD/WD.Data/Models/WeatherDbContext.cs
