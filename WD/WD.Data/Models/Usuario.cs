@@ -11,6 +11,8 @@ public partial class Usuario
 
     public string Email { get; set; } = null!;
 
+    public string Password { get; set; } = null!;
+
     public DateOnly? FechaRegistro { get; set; }
 
     public virtual ICollection<Favorito> Favoritos { get; set; } = new List<Favorito>();

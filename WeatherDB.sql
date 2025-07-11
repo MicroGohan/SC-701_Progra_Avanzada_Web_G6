@@ -10,6 +10,7 @@ CREATE TABLE usuario (
     id_usuario INT IDENTITY(1,1) PRIMARY KEY,
     nombre NVARCHAR(100) NOT NULL,
     email NVARCHAR(100) UNIQUE NOT NULL,
+	password NVARCHAR(100) NOT NULL,
     fecha_registro DATE DEFAULT GETDATE()
 );
 GO

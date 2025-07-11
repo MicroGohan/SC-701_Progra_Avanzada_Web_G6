@@ -1,0 +1,22 @@
+﻿@model WD.Mvc.Models.LoginViewModel
+@{
+    ViewData["Title"] = "Iniciar Sesión";
+}
+
+<h2>Iniciar Sesión</h2>
+<form asp-action="Login" asp-controller="Usuarios" method="post">
+    <div>
+        <label asp-for="Email"></label>
+        <input asp-for="Email" />
+        <span asp-validation-for="Email"></span>
+    </div>
+    <div>
+        <label asp-for="Password"></label>
+        <input asp-for="Password" type="password" />
+        <span asp-validation-for="Password"></span>
+    </div>
+    <button type="submit">Entrar</button>
+</form>
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

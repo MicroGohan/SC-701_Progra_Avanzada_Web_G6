@@ -1,0 +1,17 @@
+﻿@using WD.Models
+@inject WD.Repository.Interfaces.IUsuarioRepository UsuarioRepo
+@{
+    ViewData["Title"] = "Home Page";
+}
+
+@{
+    var usuarios = await UsuarioRepo.GetAllAsync();
+}
+
+<h2>Usuarios</h2>
+<ul>
+@foreach (var usuario in usuarios)
+{
+    <li>@usuario.Nombre - @usuario.Email</li>
+}
+</ul>

@@ -66,6 +66,9 @@ public partial class WeatherDbContext : DbContext
             entity.Property(e => e.Nombre)
                 .HasMaxLength(100)
                 .HasColumnName("nombre");
+            entity.Property(e => e.Password)
+                .HasMaxLength(100)
+                .HasColumnName("password");
         });
 
         OnModelCreatingPartial(modelBuilder);
