@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace WD.Data.Models;
+namespace WD.Models;
 
 public partial class Favorito
 {
@@ -11,9 +11,9 @@ public partial class Favorito
 
     public string Ciudad { get; set; } = null!;
 
-    public string? Pais { get; set; }
+    public string Pais { get; set; } = null!;
 
-    public DateOnly? FechaAgregado { get; set; }
+    public DateOnly FechaAgregado { get; set; }
 
     public virtual Usuario IdUsuarioNavigation { get; set; } = null!;
 }

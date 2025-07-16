@@ -23,6 +23,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\WD.Api\WD.Api.csproj" />
     <ProjectReference Include="..\WD.Models\WD.Models.csproj" />
   </ItemGroup>
 

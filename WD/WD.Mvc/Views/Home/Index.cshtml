@@ -1,17 +1,52 @@
-﻿@using WD.Models
-@inject WD.Repository.Interfaces.IUsuarioRepository UsuarioRepo
-@{
-    ViewData["Title"] = "Home Page";
-}
+﻿@model List<WD.Models.WDModels.WeatherResult>?
 
 @{
-    var usuarios = await UsuarioRepo.GetAllAsync();
+    // Define el titulo de la pagina que se mostrara en la pestaña del navegador
+    ViewData["Title"] = "Weather Search";
+
+    // Obtiene la consulta de busqueda guardada en ViewBag o una cadena vacia si no existe
+    var searchQuery = ViewBag.SearchQuery as string ?? "";
 }
 
-<h2>Usuarios</h2>
-<ul>
-@foreach (var usuario in usuarios)
+<h2>Buscar clima por zona</h2>
+
+<!-- Formulario que envia una peticion POST al metodo Index del controlador Home -->
+<form method="post" asp-controller="Home" asp-action="Index">
+    <!-- Campo de texto para ingresar el nombre de la ciudad o pais a buscar -->
+    <input type="text" name="searchQuery" class="form-control" placeholder="Ingrese el nombre de la zona o pais" value="@searchQuery" />
+    <!-- Boton para enviar el formulario -->
+    <button type="submit" class="btn btn-primary mt-2">Buscar</button>
+</form>
+
+<!-- Si el modelo no es nulo y contiene elementos, muestra la tabla con resultados -->
+@if (Model != null && Model.Any())
 {
-    <li>@usuario.Nombre - @usuario.Email</li>
+    <div class="mt-4">
+        <!-- Tabla con borde que muestra los resultados del clima -->
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>Nombre</th>
+                    <th>Pais</th>
+                    <th>Descripcion</th>
+                    <th>Temperatura (°C)</th>
+                    <th>Humedad (%)</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Recorre cada elemento del modelo para mostrar su informacion -->
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td>@item.Name</td>
+                        <td>@item.Country</td>
+                        <!-- Muestra la descripcion con la primera letra en mayuscula -->
+                        <td>@(string.IsNullOrEmpty(item.WeatherDescription) ? "" : char.ToUpper(item.WeatherDescription[0]) + item.WeatherDescription[1..])</td>
+                        <td>@item.Temperature</td>
+                        <td>@item.Humidity</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
 }
-</ul>
