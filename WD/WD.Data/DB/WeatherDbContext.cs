@@ -28,7 +28,7 @@ public partial class WeatherDbContext : DbContext
     // Metodo llamado al configurar el contexto (por ejemplo, definir el proveedor de base de datos)
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
 #warning Para proteger informacion sensible como cadenas de conexion, se recomienda moverla a configuracion externa
-        => optionsBuilder.UseSqlServer("Server=Max;Database=WeatherDB;Trusted_Connection=True;TrustServerCertificate=True;");
+        => optionsBuilder.UseSqlServer("Server=IBM-PF3LNJDT;Database=WeatherDB;Trusted_Connection=True;TrustServerCertificate=True;");
 
     // Metodo para configurar el modelo de EF Core mediante el ModelBuilder
     protected override void OnModelCreating(ModelBuilder modelBuilder)

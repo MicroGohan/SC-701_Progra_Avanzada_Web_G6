@@ -8,45 +8,133 @@
     var searchQuery = ViewBag.SearchQuery as string ?? "";
 }
 
-<h2>Buscar clima por zona</h2>
+<!-- Bootstrap -->
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
 
-<!-- Formulario que envia una peticion POST al metodo Index del controlador Home -->
-<form method="post" asp-controller="Home" asp-action="Index">
-    <!-- Campo de texto para ingresar el nombre de la ciudad o pais a buscar -->
-    <input type="text" name="searchQuery" class="form-control" placeholder="Ingrese el nombre de la zona o pais" value="@searchQuery" />
-    <!-- Boton para enviar el formulario -->
-    <button type="submit" class="btn btn-primary mt-2">Buscar</button>
-</form>
+<style>
+    :root {
+        --lapis-lazuli: #336699;
+        --carolina-blue: #86bbd8;
+        --light-green: #9ee493;
+        --hunter-green: #33673b;
+        --nyanza: #daf7dc;
+    }
+
+    body {
+        margin: 0;
+        font-family: 'Segoe UI', sans-serif;
+        background: linear-gradient(135deg, var(--carolina-blue), var(--nyanza));
+        min-height: 100vh;
+        overflow-x: hidden;
+        color: white;
+    }
+
+    .hero {
+        padding: 80px 20px;
+        text-align: left;
+        position: relative;
+        background: linear-gradient(145deg, #86bbd8 0%, #daf7dc 100%);
+        color: var(--lapis-lazuli);
+    }
+
+        .hero h1 {
+            font-size: 3rem;
+            font-weight: bold;
+        }
+
+        .hero p {
+            font-size: 1.25rem;
+            max-width: 500px;
+        }
+
+    .search-form input[type="text"] {
+        max-width: 400px;
+        border-radius: 30px;
+        padding-left: 20px;
+    }
+
+    .search-form button {
+        border-radius: 30px;
+        background-color: var(--hunter-green);
+        border: none;
+        padding: 10px 24px;
+    }
+
+        .search-form button:hover {
+            background-color: #2a5230;
+        }
+
+    .read-more {
+        margin-top: 20px;
+        background-color: white;
+        color: var(--lapis-lazuli);
+        border: none;
+        padding: 10px 24px;
+        border-radius: 30px;
+    }
+
+        .read-more:hover {
+            background-color: var(--light-green);
+            color: #000;
+        }
+
+    .cloud-sun {
+        position: absolute;
+        right: 40px;
+        top: 60px;
+        max-width: 200px;
+        opacity: 0.8;
+    }
+</style>
+
+<body>
+    <div class="container-fluid hero">
+        <div class="container">
+            <h1>TempStream</h1>
+            <p>Consulta el clima en tu ciudad o cualquier parte del mundo en segundos.</p>
+
+            <!-- Formulario que envia una peticion POST al metodo Index del controlador Home -->
+            <form method="post" asp-controller="Home" asp-action="Index" class="search-form d-flex flex-column flex-sm-row gap-2 align-items-center mt-4">
+                <!-- Campo de texto para ingresar el nombre de la ciudad o pais a buscar -->
+                <input type="text" name="searchQuery" class="form-control" placeholder="Ej. San Jose, Lima, Madrid..." value="@searchQuery" />
+                <!-- Boton para enviar el formulario -->
+                <button type="submit" class="btn btn-primary">Buscar</button>
+            </form>
+            <!-- Optional imagen -->
+            <img src="~/images/sun-cloud.png" class="cloud-sun" alt="Sun and Cloud" />
+        </div>
+    </div>
+</body>
 
 <!-- Si el modelo no es nulo y contiene elementos, muestra la tabla con resultados -->
 @if (Model != null && Model.Any())
 {
-    <div class="mt-4">
-        <!-- Tabla con borde que muestra los resultados del clima -->
-        <table class="table table-bordered">
-            <thead>
-                <tr>
-                    <th>Nombre</th>
-                    <th>Pais</th>
-                    <th>Descripcion</th>
-                    <th>Temperatura (°C)</th>
-                    <th>Humedad (%)</th>
-                </tr>
-            </thead>
-            <tbody>
-                <!-- Recorre cada elemento del modelo para mostrar su informacion -->
-                @foreach (var item in Model)
-                {
-                    <tr>
-                        <td>@item.Name</td>
-                        <td>@item.Country</td>
-                        <!-- Muestra la descripcion con la primera letra en mayuscula -->
-                        <td>@(string.IsNullOrEmpty(item.WeatherDescription) ? "" : char.ToUpper(item.WeatherDescription[0]) + item.WeatherDescription[1..])</td>
-                        <td>@item.Temperature</td>
-                        <td>@item.Humidity</td>
-                    </tr>
-                }
-            </tbody>
-        </table>
+    <div class="container mt-5">
+        <h3 class="mb-4 text-center text-primary">Resultados del clima</h3>
+
+        <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+            <!-- Recorre cada elemento del modelo para mostrar su informacion -->
+            @foreach (var item in Model)
+            {
+                <div class="col">
+                    <div class="card shadow h-100" style="border-radius: 15px;">
+                        <div class="card-body bg-light">
+                            <h5 class="card-title text-success fw-bold">@item.Name, @item.Country</h5>
+                            <p class="card-text">
+                                <strong>Descripción:</strong>
+                                <!-- Muestra la descripcion con la primera letra en mayuscula -->
+                                @(string.IsNullOrEmpty(item.WeatherDescription) ? "N/A" : char.ToUpper(item.WeatherDescription[0]) + item.WeatherDescription[1..])
+                            </p>
+                            <p class="card-text">
+                                <strong>Temperatura:</strong> @item.Temperature °C
+                            </p>
+                            <p class="card-text">
+                                <strong>Humedad:</strong> @item.Humidity%
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
     </div>
 }

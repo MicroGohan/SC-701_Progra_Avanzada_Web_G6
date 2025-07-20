@@ -1,27 +1,116 @@
 ﻿@model WD.Mvc.Models.SignUpViewModel
 @{
     ViewData["Title"] = "Registro";
+    Layout = null;
 }
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Registro - TempStream</title>
 
-<h2>Registro</h2>
-<form asp-action="SignUp" asp-controller="Usuarios" method="post">
-    <div>
-        <label asp-for="Nombre"></label>
-        <input asp-for="Nombre" />
-        <span asp-validation-for="Nombre"></span>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+
+    <style>
+        :root {
+            --lapis-lazuli: #336699;
+            --carolina-blue: #86bbd8;
+            --light-green: #9ee493;
+            --hunter-green: #33673b;
+            --nyanza: #daf7dc;
+        }
+
+        body, html {
+            height: 100%;
+            font-family: 'Montserrat', sans-serif;
+        }
+
+        .bg-left {
+            background-color: var(--lapis-lazuli);
+            color: white;
+        }
+
+        .form-control:focus {
+            border-color: var(--light-green);
+            box-shadow: 0 0 0 0.2rem rgba(158, 228, 147, 0.5);
+        }
+
+        .form-container {
+            max-width: 400px;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .brand-title {
+            font-size: 2.5rem;
+            font-weight: bold;
+            font-family: 'Montserrat', sans-serif;
+        }
+
+        .emoji-wave {
+            font-size: 2rem;
+        }
+
+        .btn-primary {
+            background-color: var(--hunter-green);
+            border-color: var(--hunter-green);
+        }
+
+            .btn-primary:hover {
+                background-color: #2a5230;
+            }
+    </style>
+</head>
+<body>
+    <div class="container-fluid h-100">
+        <div class="row h-100">
+            <!-- Left panel -->
+            <div class="col-md-6 d-none d-md-flex flex-column justify-content-center align-items-start p-5 bg-left">
+                <h1 class="brand-title mb-3">Hola Fan del Clima! <span class="emoji-wave">👋</span></h1>
+                <p class="lead">Hazle swipe al sol, la lluvia o la nieve. Clime te lo muestra todo.</p>
+            </div>
+
+            <!-- Right panel (Form) -->
+            <div class="col-md-6 d-flex align-items-center justify-content-center">
+                <div class="form-container w-100 px-4">
+                    <h2 class="mb-4 text-center text-success">Crear Cuenta</h2>
+                    <form asp-action="SignUp" asp-controller="Usuarios" method="post" novalidate>
+                        <div class="mb-3">
+                            <label asp-for="Nombre" class="form-label"></label>
+                            <input asp-for="Nombre" class="form-control" />
+                            <span asp-validation-for="Nombre" class="text-danger small"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="Email" class="form-label"></label>
+                            <input asp-for="Email" class="form-control" />
+                            <span asp-validation-for="Email" class="text-danger small"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="Password" class="form-label"></label>
+                            <input asp-for="Password" type="password" class="form-control" />
+                            <span asp-validation-for="Password" class="text-danger small"></span>
+                        </div>
+
+                        <div class="d-grid mb-3">
+                            <button type="submit" class="btn btn-primary">Registrarse</button>
+                        </div>
+
+                        <div class="text-center">
+                            ¿Ya tienes cuenta? <a asp-controller="Usuarios" asp-action="Login">Inicia sesión</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
     </div>
-    <div>
-        <label asp-for="Email"></label>
-        <input asp-for="Email" />
-        <span asp-validation-for="Email"></span>
-    </div>
-    <div>
-        <label asp-for="Password"></label>
-        <input asp-for="Password" type="password" />
-        <span asp-validation-for="Password"></span>
-    </div>
-    <button type="submit">Registrarse</button>
-</form>
-@section Scripts {
-    <partial name="_ValidationScriptsPartial" />
-}
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    @section Scripts {
+        <partial name="_ValidationScriptsPartial" />
+    }
+</body>
+</html>
