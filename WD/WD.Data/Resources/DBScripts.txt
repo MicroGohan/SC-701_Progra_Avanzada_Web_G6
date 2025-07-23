@@ -7,3 +7,5 @@ dotnet ef dbcontext scaffold "Server=IBM-PF3LNJDT;Database=WeatherDB;Trusted_Con
  
 dotnet tool install --global dotnet-ef
 dotnet tool update --global dotnet-ef
+
+Update-Database
