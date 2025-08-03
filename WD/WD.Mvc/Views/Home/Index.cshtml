@@ -85,6 +85,15 @@
         max-width: 200px;
         opacity: 0.8;
     }
+
+    /* Aplica texto negro en el modal */
+    #favoritoModal .modal-content,
+    #favoritoModal .modal-header,
+    #favoritoModal .modal-body,
+    #favoritoModal .modal-footer {
+        color: black;
+    }
+
 </style>
 
 <body>
@@ -104,6 +113,35 @@
             <img src="~/images/sun-cloud.png" class="cloud-sun" alt="Sun and Cloud" />
         </div>
     </div>
+
+    @if (TempData["FavoritoMensaje"] != null)
+    {
+        <div class="modal fade" id="favoritoModal" tabindex="-1" aria-labelledby="modalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="modalLabel">Éxito</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                    </div>
+                    <div class="modal-body">
+                        @if (TempData["FavoritoMensaje"] != null)
+                        {
+                            <div class="alert alert-success" role="alert">
+                                @Html.Raw(TempData["FavoritoMensaje"])
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <script>
+            window.addEventListener('DOMContentLoaded', function () {
+                var modal = new bootstrap.Modal(document.getElementById('favoritoModal'));
+                modal.show();
+            });
+        </script>
+    }
 </body>
 
 <!-- Si el modelo no es nulo y contiene elementos, muestra la tabla con resultados -->
@@ -131,6 +169,13 @@
                             <p class="card-text">
                                 <strong>Humedad:</strong> @item.Humidity%
                             </p>
+                            <!-- botón agregar a favoritos -->
+                            <form asp-controller="Favorites" asp-action="Add" method="post" class="d-inline">
+                                @Html.AntiForgeryToken()
+                                <input type="hidden" name="ciudad" value="@item.Name" />
+                                <input type="hidden" name="pais" value="@item.Country" />
+                                <button type="submit" class="btn btn-sm btn-outline-warning">⭐ Añadir a favoritos</button>
+                            </form>
                         </div>
                     </div>
                 </div>

@@ -1,0 +1,42 @@
+﻿@model List<WD.Models.Favorito>
+@{
+    ViewData["Title"] = "Mis Favoritos";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<!-- Bootstrap -->
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+
+<h2 class="mt-4">🌟 Mis Favoritos</h2>
+
+@if (!Model.Any())
+{
+    <p>No tienes ninguna ciudad agregada a favoritos.</p>
+}
+else
+{
+    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+        @foreach (var fav in Model)
+        {
+            <div class="col">
+                <div class="card shadow h-100" style="border-radius:15px;">
+                    <div class="card-body bg-light">
+                        <h5 class="card-title">@fav.Ciudad, @fav.Pais</h5>
+                        <p class="card-text">
+                            <small class="text-muted">Agregado el @fav.FechaAgregado.ToString("dddd dd 'de' MMMM 'de' yyyy", new System.Globalization.CultureInfo("es-ES"))</small>
+                        </p>
+                        <a asp-controller="Home" asp-action="Index"
+                           asp-route-searchQuery="@($"{fav.Ciudad}, {fav.Pais}")"
+                           class="btn btn-sm btn-primary">
+                            Ver Clima
+                        </a>
+                        <form asp-controller="Favorites" asp-action="Delete" method="post" class="d-inline">
+                            @Html.AntiForgeryToken()
+                            <input type="hidden" name="idFavorito" value="@fav.IdFavorito" />
+                            <button type="submit" class="btn btn-danger btn-sm">Eliminar</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+}
