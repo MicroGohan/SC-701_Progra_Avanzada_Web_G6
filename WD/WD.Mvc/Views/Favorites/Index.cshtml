@@ -29,6 +29,22 @@ else
                            class="btn btn-sm btn-primary">
                             Ver Clima
                         </a>
+                        <br />
+                        <form asp-controller="Favorites" asp-action="UpdatePrioridad" method="post" class="d-flex align-items-center gap-2">
+                            <input type="hidden" name="idFavorito" value="@fav.IdFavorito" />
+                            @{
+                                var seleccionadoBajo = fav.Prioridad == "bajo" ? "selected" : "";
+                                var seleccionadoMedio = fav.Prioridad == "medio" ? "selected" : "";
+                                var seleccionadoAlto = fav.Prioridad == "alto" ? "selected" : "";
+                            }
+                            <select name="prioridad" class="form-select form-select-sm w-auto">
+                                <option value="bajo" selected="@(fav.Prioridad == "bajo")">Bajo</option>
+                                <option value="medio" selected="@(fav.Prioridad == "medio")">Medio</option>
+                                <option value="alto" selected="@(fav.Prioridad == "alto")">Alto</option>
+                            </select>
+                            <button type="submit" class="btn btn-success btn-sm">Guardar</button>
+                        </form>
+                        <br />
                         <form asp-controller="Favorites" asp-action="Delete" method="post" class="d-inline">
                             @Html.AntiForgeryToken()
                             <input type="hidden" name="idFavorito" value="@fav.IdFavorito" />
@@ -39,4 +55,31 @@ else
             </div>
         }
     </div>
+    <div class="modal fade" id="eliminadoModal" tabindex="-1" aria-labelledby="eliminadoModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header bg-danger text-white">
+                    <h5 class="modal-title" id="eliminadoModalLabel">Eliminado</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                </div>
+                <div class="modal-body text-dark">
+                    @Html.Raw(TempData["EliminadoMensaje"])
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Cerrar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    @section Scripts {
+        <script>
+            document.addEventListener('DOMContentLoaded', function () {
+                var eliminadoMensaje = '@TempData["EliminadoMensaje"]';
+                if (eliminadoMensaje) {
+                    var eliminadoModal = new bootstrap.Modal(document.getElementById('eliminadoModal'));
+                    eliminadoModal.show();
+                }
+            });
+        </script>
+    }
 }

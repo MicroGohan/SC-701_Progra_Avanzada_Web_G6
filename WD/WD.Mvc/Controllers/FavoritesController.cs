@@ -30,9 +30,12 @@ namespace WD.Mvc.Controllers
             int usuarioId = int.Parse(usuarioIdStr);
 
             var favoritos = _context.Favoritos
-                .Where(f => f.IdUsuario == usuarioId)
-                .OrderByDescending(f => f.FechaAgregado)
-                .ToList();
+             .Where(f => f.IdUsuario == usuarioId)
+             .OrderBy(f => f.Prioridad == "bajo" ? 3 :
+                  f.Prioridad == "medio" ? 2 :
+                  f.Prioridad == "alto" ? 1 : 0)
+             .ThenByDescending(f => f.FechaAgregado)
+             .ToList();
 
             return View(favoritos);
         }
@@ -94,6 +97,27 @@ namespace WD.Mvc.Controllers
             {
                 _context.Favoritos.Remove(favorito);
                 _context.SaveChanges();
+
+                TempData["EliminadoMensaje"] = $"✅ La Ciudad <strong>{favorito.Ciudad}</strong> del Pais <strong>{favorito.Pais}</strong> ha sido eliminada de favoritos correctamente.";
+            }
+            else
+            {
+                TempData["EliminadoMensaje"] = "⚠️ Favorito no encontrado.";
+            }
+
+            return RedirectToAction("Index");
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult UpdatePrioridad(int idFavorito, string prioridad)
+        {
+            var favorito = _context.Favoritos.FirstOrDefault(f => f.IdFavorito == idFavorito);
+            if (favorito != null)
+            {
+                favorito.Prioridad = prioridad;
+                _context.SaveChanges();
+                TempData["Mensaje"] = $"✅ Prioridad actualizada a <strong>{prioridad}</strong>.";
             }
 
             return RedirectToAction("Index");
