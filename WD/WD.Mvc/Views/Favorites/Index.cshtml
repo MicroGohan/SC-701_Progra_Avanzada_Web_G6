@@ -71,15 +71,14 @@ else
             </div>
         </div>
     </div>
-    @section Scripts {
-        <script>
-            document.addEventListener('DOMContentLoaded', function () {
-                var eliminadoMensaje = '@TempData["EliminadoMensaje"]';
-                if (eliminadoMensaje) {
-                    var eliminadoModal = new bootstrap.Modal(document.getElementById('eliminadoModal'));
-                    eliminadoModal.show();
-                }
-            });
-        </script>
-    }
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            var eliminadoMensaje = '@TempData["EliminadoMensaje"]';
+            if (eliminadoMensaje) {
+                var eliminadoModal = new bootstrap.Modal(document.getElementById('eliminadoModal'));
+                eliminadoModal.show();
+            }
+        });
+    </script>
 }
