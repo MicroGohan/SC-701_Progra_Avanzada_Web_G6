@@ -2,13 +2,13 @@
 
 2. En user settings tener opciones para definir continente, medida de temperatura, cambiar contra, cambiar nombre usuario, etc. Diego
 
-3. Tener una opcion para desplegar la info avanzada del clima de una region. Diego
+3. Tener una opción para desplegar la info avanzada del clima de una region. Diego
 
 4. Que se muestren el top 5 favoritos del usuario arriba de la pagina. wil
 
-5. Agregar algun tipo de prioridad a los favoritos basada en prioridad (bajo, medio, alto) y fecha de agregado.   listo
+5. Agregar algún tipo de prioridad a los favoritos basada en prioridad (bajo, medio, alto) y fecha de agregado.   listo
 
-6.Tambien a la hora de agregarlo que de una opcion de descripcion custom. wil
+6.Tambien a la hora de agregarlo que de una opción de descripción custom. wil
 
 7. Que el top 5 se actualice en "vivo". wil
 
