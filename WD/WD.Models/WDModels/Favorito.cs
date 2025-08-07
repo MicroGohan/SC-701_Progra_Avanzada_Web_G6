@@ -14,7 +14,7 @@ public partial class Favorito
     public string Pais { get; set; } = null!;
 
     public DateOnly FechaAgregado { get; set; }
-
+    public string? Descripcion { get; set; }
     public virtual Usuario IdUsuarioNavigation { get; set; } = null!;
     public string Prioridad { get; set; } = "bajo";
 }

@@ -69,8 +69,8 @@ namespace WD.Mvc.Controllers
 
                 _context.Favoritos.Add(favorito);
                 _context.SaveChanges();
-
                 TempData["FavoritoMensaje"] = $"✅ Ciudad <strong>{ciudad}</strong> del País <strong>{pais}</strong> ha sido agregada a favoritos correctamente.";
+                TempData["UltimoFavoritoId"] = favorito.IdFavorito;
             }
             else
             {
@@ -121,6 +121,32 @@ namespace WD.Mvc.Controllers
             }
 
             return RedirectToAction("Index");
+        }
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult UpdateDescripcion(int idFavorito, string descripcion)
+        {
+            var usuarioIdStr = HttpContext.Session.GetString("UsuarioId");
+            if (string.IsNullOrEmpty(usuarioIdStr))
+                return RedirectToAction("Login", "Usuarios");
+
+            int usuarioId = int.Parse(usuarioIdStr);
+
+            var favorito = _context.Favoritos
+                .FirstOrDefault(f => f.IdFavorito == idFavorito && f.IdUsuario == usuarioId);
+
+            if (favorito != null)
+            {
+                favorito.Descripcion = descripcion;
+                _context.SaveChanges();
+                TempData["DescripcionGuardada"] = "✅ Descripción guardada con éxito.";
+            }
+            else
+            {
+                TempData["FavoritoMensaje"] = "⚠️ No se pudo agregar la descripción.";
+            }
+
+            return RedirectToAction("Index", "Home");
         }
     }
 }

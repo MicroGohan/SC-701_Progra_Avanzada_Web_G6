@@ -1,7 +1,7 @@
 ﻿@model List<WD.Models.WDModels.WeatherResult>?
 
 @{
-    // Define el titulo de la pagina que se mostrara en la pestaña del navegador
+    // Define el titulo de la pagina que se montrara en la pestaña del navegador
     ViewData["Title"] = "Weather Search";
 
     // Obtiene la consulta de busqueda guardada en ViewBag o una cadena vacia si no existe
@@ -94,6 +94,20 @@
         color: black;
     }
 
+    #descripcionModal .modal-content,
+    #descripcionModal .modal-header,
+    #descripcionModal .modal-body,
+    #descripcionModal .modal-footer {
+        color: black;
+    }
+
+    #favoritoDuplicadoModal .modal-content,
+    #favoritoDuplicadoModal .modal-header,
+    #favoritoDuplicadoModal .modal-body,
+    #favoritoDuplicadoModal .modal-footer {
+        color: black;
+    }
+
 </style>
 
 <body>
@@ -114,7 +128,7 @@
         </div>
     </div>
 
-    @if (TempData["FavoritoMensaje"] != null)
+    @if (TempData["FavoritoMensaje"] != null && TempData["UltimoFavoritoId"] != null)
     {
         <div class="modal fade" id="favoritoModal" tabindex="-1" aria-labelledby="modalLabel" aria-hidden="true">
             <div class="modal-dialog">
@@ -124,13 +138,42 @@
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
                     </div>
                     <div class="modal-body">
-                        @if (TempData["FavoritoMensaje"] != null)
+                        @if (TempData["FavoritoMensaje"] != null && TempData["UltimoFavoritoId"] != null)
                         {
                             <div class="alert alert-success" role="alert">
                                 @Html.Raw(TempData["FavoritoMensaje"])
                             </div>
+                            <button type="button" class="btn btn-info" data-bs-toggle="modal" data-bs-target="#descripcionModal" data-bs-dismiss="modal">
+                                Agregar descripción
+                            </button>
                         }
                     </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Modal para agregar descripción -->
+        <div class="modal fade" id="descripcionModal" tabindex="-1" aria-labelledby="descripcionLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <form asp-controller="Favorites" asp-action="UpdateDescripcion" method="post">
+                        @Html.AntiForgeryToken()
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="descripcionLabel">Agregar descripción</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                        </div>
+                        <div class="modal-body">
+                            <input type="hidden" name="idFavorito" value="@TempData["UltimoFavoritoId"]" />
+                            <div class="mb-3">
+                                <label for="descripcion" class="form-label">Descripción</label>
+                                <textarea name="descripcion" class="form-control" maxlength="250" required></textarea>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="submit" class="btn btn-success">Guardar</button>
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                        </div>
+                    </form>
                 </div>
             </div>
         </div>
@@ -138,6 +181,57 @@
         <script>
             window.addEventListener('DOMContentLoaded', function () {
                 var modal = new bootstrap.Modal(document.getElementById('favoritoModal'));
+                modal.show();
+            });
+        </script>
+
+        <!-- Script para mostrar el modal de descripción guardada -->
+        @if (TempData["DescripcionGuardada"] != null)
+        {
+            <div class="modal fade" id="descripcionGuardadaModal" tabindex="-1" aria-labelledby="descGuardadaLabel" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="descGuardadaLabel">Éxito</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="alert alert-success" role="alert">
+                                @TempData["DescripcionGuardada"]
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <script>
+                window.addEventListener('DOMContentLoaded', function () {
+                    var modal = new bootstrap.Modal(document.getElementById('descripcionGuardadaModal'));
+                    modal.show();
+                });
+            </script>
+        }
+    }
+
+    @if (TempData["FavoritoMensaje"] != null && TempData["UltimoFavoritoId"] == null)
+    {
+        <div class="modal fade" id="favoritoDuplicadoModal" tabindex="-1" aria-labelledby="modalDuplicadoLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="modalDuplicadoLabel">Aviso</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="alert alert-warning" role="alert">
+                            @Html.Raw(TempData["FavoritoMensaje"])
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <script>
+            window.addEventListener('DOMContentLoaded', function () {
+                var modal = new bootstrap.Modal(document.getElementById('favoritoDuplicadoModal'));
                 modal.show();
             });
         </script>
