@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using WD.Data.DB;
+using WD.Mvc.Services;
 using WD.Repository.Interfaces;
 using WD.Repository.Repositories;
 
@@ -12,6 +13,7 @@ builder.Services.AddDbContext<WeatherDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("WeatherDB")));
 builder.Services.AddScoped<IUsuarioRepository, UsuarioRepository>();
 builder.Services.AddSession();
+builder.Services.AddScoped<FavoritosService>();
 
 var app = builder.Build();
 

@@ -3,6 +3,7 @@ using System.Diagnostics;
 using System.Text.Json;
 using WD.Models.WDModels;
 using WD.Mvc.Models;
+using WD.Mvc.Services;
 
 namespace WD.Mvc.Controllers
 {
@@ -15,16 +16,20 @@ namespace WD.Mvc.Controllers
         // Fabrica para crear instancias de HttpClient
         private readonly IHttpClientFactory _httpClientFactory;
 
+        private readonly FavoritosService _favoritosService;
+
+
         // Constructor del controlador que recibe inyeccion de dependencias
-        public HomeController(ILogger<HomeController> logger, IHttpClientFactory httpClientFactory)
+        public HomeController(ILogger<HomeController> logger, IHttpClientFactory httpClientFactory, FavoritosService favoritosService)
         {
             _logger = logger;
             _httpClientFactory = httpClientFactory;
+            _favoritosService = favoritosService;
         }
 
         // Metodo que responde a peticiones HTTP GET para la vista principal (Index)
         [HttpGet]
-        public IActionResult Index()
+        public async Task<IActionResult> IndexAsync()
         {
             // Verifica si no existe un usuario logueado en la sesion
             if (string.IsNullOrEmpty(HttpContext.Session.GetString("UsuarioId")))
@@ -32,6 +37,14 @@ namespace WD.Mvc.Controllers
                 // Si no hay sesion, redirige al login
                 return RedirectToAction("Login", "Usuarios");
             }
+
+            int usuarioId = int.Parse(HttpContext.Session.GetString("UsuarioId")!);
+
+            // Llama al método del FavoritesController (o mejor, mueve la lógica a un servicio compartido)
+            var top5 = await _favoritosService.GetTop5FavoritosAsync(usuarioId);
+
+
+            ViewBag.Top5Favoritos = top5;
 
             // Devuelve la vista Index sin datos (null)
             return View(null);

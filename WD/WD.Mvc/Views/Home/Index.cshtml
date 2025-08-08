@@ -277,3 +277,45 @@
         </div>
     </div>
 }
+
+@if (ViewBag.Top5Favoritos != null)
+{
+    var top5 = ViewBag.Top5Favoritos as List<WD.Mvc.Models.FavoritoClimaViewModel>;
+    <div class="container mt-5">
+        <h3 class="mb-4 text-center text-warning">Top 5 Favoritos</h3>
+        <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+            @foreach (var fav in top5)
+            {
+                <div class="col">
+                    <div class="card shadow h-100" style="border-radius: 15px;">
+                        <div class="card-body bg-light">
+                            <h5 class="card-title text-success fw-bold">@fav.Favorito.Ciudad, @fav.Favorito.Pais</h5>
+                            <p class="card-text"><strong>Prioridad:</strong> @fav.Favorito.Prioridad</p>
+                            @if (!string.IsNullOrWhiteSpace(fav.Favorito.Descripcion))
+                            {
+                                <p class="card-text"><strong>Descripción:</strong> @fav.Favorito.Descripcion</p>
+                            }
+                            <p class="card-text">
+                                <small class="text-muted">
+                                    Agregado el @fav.Favorito.FechaAgregado.ToString("dddd dd 'de' MMMM 'de' yyyy", new System.Globalization.CultureInfo("es-ES"))
+                                </small>
+                            </p>
+                            @if (fav.Temperatura != null)
+                            {
+                                <p class="card-text"><strong>Temperatura:</strong> @fav.Temperatura °C</p>
+                            }
+                            @if (fav.Humedad != null)
+                            {
+                                <p class="card-text"><strong>Humedad:</strong> @fav.Humedad%</p>
+                            }
+                            @if (!string.IsNullOrWhiteSpace(fav.WeatherDescription))
+                            {
+                                <p class="card-text"><strong>Clima:</strong> @fav.WeatherDescription</p>
+                            }
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+}
