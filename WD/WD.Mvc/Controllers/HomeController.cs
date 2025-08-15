@@ -4,6 +4,7 @@ using System.Text.Json;
 using WD.Models.WDModels;
 using WD.Mvc.Models;
 using WD.Mvc.Services;
+using WD.Data.DB;
 
 namespace WD.Mvc.Controllers
 {
@@ -17,14 +18,16 @@ namespace WD.Mvc.Controllers
         private readonly IHttpClientFactory _httpClientFactory;
 
         private readonly FavoritosService _favoritosService;
+        private readonly WeatherDbContext _context;
 
 
         // Constructor del controlador que recibe inyeccion de dependencias
-        public HomeController(ILogger<HomeController> logger, IHttpClientFactory httpClientFactory, FavoritosService favoritosService)
+        public HomeController(ILogger<HomeController> logger, IHttpClientFactory httpClientFactory, FavoritosService favoritosService, WeatherDbContext context)
         {
             _logger = logger;
             _httpClientFactory = httpClientFactory;
             _favoritosService = favoritosService;
+            _context = context;
         }
 
         // Metodo que responde a peticiones HTTP GET para la vista principal (Index)
@@ -40,9 +43,12 @@ namespace WD.Mvc.Controllers
 
             int usuarioId = int.Parse(HttpContext.Session.GetString("UsuarioId")!);
 
+            // Establecer el símbolo de unidad para la vista (°C o °F)
+            var user = _context.Usuarios.FirstOrDefault(u => u.IdUsuario == usuarioId);
+            ViewBag.TempUnitSymbol = (user?.UnidadTemperatura == "F") ? "°F" : "°C";
+
             // Llama al método del FavoritesController (o mejor, mueve la lógica a un servicio compartido)
             var top5 = await _favoritosService.GetTop5FavoritosAsync(usuarioId);
-
 
             ViewBag.Top5Favoritos = top5;
 
@@ -67,11 +73,16 @@ namespace WD.Mvc.Controllers
             if (string.IsNullOrWhiteSpace(searchQuery))
                 return View(null);
 
+            int usuarioId = int.Parse(HttpContext.Session.GetString("UsuarioId")!);
+            var user = _context.Usuarios.FirstOrDefault(u => u.IdUsuario == usuarioId);
+            var units = (user?.UnidadTemperatura == "F") ? "imperial" : "metric"; // F -> imperial, C -> metric
+            ViewBag.TempUnitSymbol = (units == "imperial") ? "°F" : "°C";
+
             // Crea un cliente HTTP usando la fabrica inyectada
             var client = _httpClientFactory.CreateClient();
 
             // Construye la URL para llamar a la API local de Weather
-            var url = $"https://localhost:7215/api/weather/search?q={Uri.EscapeDataString(searchQuery)}&limit=10";
+            var url = $"https://localhost:7215/api/weather/search?q={Uri.EscapeDataString(searchQuery)}&limit=10&units={units}";
 
             // Realiza la llamada HTTP a la API
             var response = await client.GetAsync(url);
@@ -90,7 +101,7 @@ namespace WD.Mvc.Controllers
             // Deserializa el JSON en una lista de objetos WeatherResult
             var results = JsonSerializer.Deserialize<List<WeatherResult>>(json, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
 
-            // Devuelve la vista con los resultados de la busqueda
+            // Devuelve la vista with los resultados de la busqueda
             return View(results);
         }
 

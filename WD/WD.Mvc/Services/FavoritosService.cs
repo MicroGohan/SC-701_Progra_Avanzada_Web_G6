@@ -24,12 +24,15 @@ namespace WD.Mvc.Services
                 .Take(5)
                 .ToList();
 
+            var user = _context.Usuarios.FirstOrDefault(u => u.IdUsuario == usuarioId);
+            var units = (user?.UnidadTemperatura == "F") ? "imperial" : "metric";
+
             var favoritosClima = new List<FavoritoClimaViewModel>();
             var client = _httpClientFactory.CreateClient();
 
             foreach (var fav in favoritos)
             {
-                var url = $"https://localhost:7215/api/weather/search?q={Uri.EscapeDataString(fav.Ciudad + "," + fav.Pais)}&limit=1";
+                var url = $"https://localhost:7215/api/weather/search?q={Uri.EscapeDataString(fav.Ciudad + "," + fav.Pais)}&limit=1&units={units}";
                 var response = await client.GetAsync(url);
 
                 string? weatherDescription = null;

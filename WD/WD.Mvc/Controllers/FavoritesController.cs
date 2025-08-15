@@ -35,13 +35,17 @@ namespace WD.Mvc.Controllers
                 .ThenByDescending(f => f.FechaAgregado)
                 .ToList();
 
+            var user = _context.Usuarios.FirstOrDefault(u => u.IdUsuario == usuarioId);
+            var units = (user?.UnidadTemperatura == "F") ? "imperial" : "metric";
+            ViewBag.TempUnitSymbol = (units == "imperial") ? "°F" : "°C";
+
             var favoritosClima = new List<FavoritoClimaViewModel>();
             var client = _httpClientFactory.CreateClient();
 
             foreach (var fav in favoritos)
             {
                 // Llama a tu propia API para obtener el clima de la ciudad y país del favorito
-                var url = $"https://localhost:7215/api/weather/search?q={Uri.EscapeDataString(fav.Ciudad + "," + fav.Pais)}&limit=1";
+                var url = $"https://localhost:7215/api/weather/search?q={Uri.EscapeDataString(fav.Ciudad + "," + fav.Pais)}&limit=1&units={units}";
                 var response = await client.GetAsync(url);
 
                 string? weatherDescription = null;
@@ -191,12 +195,16 @@ namespace WD.Mvc.Controllers
                 .Take(5)
                 .ToList();
 
+            var user = _context.Usuarios.FirstOrDefault(u => u.IdUsuario == usuarioId);
+            var units = (user?.UnidadTemperatura == "F") ? "imperial" : "metric";
+            ViewBag.TempUnitSymbol = (units == "imperial") ? "°F" : "°C";
+
             var favoritosClima = new List<FavoritoClimaViewModel>();
             var client = _httpClientFactory.CreateClient();
 
             foreach (var fav in favoritos)
             {
-                var url = $"https://localhost:7215/api/weather/search?q={Uri.EscapeDataString(fav.Ciudad + "," + fav.Pais)}&limit=1";
+                var url = $"https://localhost:7215/api/weather/search?q={Uri.EscapeDataString(fav.Ciudad + "," + fav.Pais)}&limit=1&units={units}";
                 var response = await client.GetAsync(url);
 
                 string? weatherDescription = null;
