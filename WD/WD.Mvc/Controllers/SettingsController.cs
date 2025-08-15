@@ -1,29 +1,26 @@
 using Microsoft.AspNetCore.Mvc;
-using WD.Data.DB;
 using WD.Mvc.Models;
+using WD.Mvc.Services;
+using WD.Repository.Interfaces;
 
 namespace WD.Mvc.Controllers
 {
     public class SettingsController : Controller
     {
-        private readonly WeatherDbContext _context;
+        private readonly IUsuarioRepository _usuarioRepo;
+        private readonly UserService _userService;
 
-        public SettingsController(WeatherDbContext context)
+        public SettingsController(IUsuarioRepository usuarioRepo, UserService userService)
         {
-            _context = context;
+            _usuarioRepo = usuarioRepo;
+            _userService = userService;
         }
 
         [HttpGet]
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
-            var usuarioIdStr = HttpContext.Session.GetString("UsuarioId");
-            if (string.IsNullOrEmpty(usuarioIdStr))
-                return RedirectToAction("Login", "Usuarios");
-
-            int usuarioId = int.Parse(usuarioIdStr);
-            var user = _context.Usuarios.FirstOrDefault(u => u.IdUsuario == usuarioId);
-            if (user == null)
-                return RedirectToAction("Login", "Usuarios");
+            var user = await _userService.GetUsuarioActualAsync(HttpContext);
+            if (user == null) return RedirectToAction("Login", "Usuarios");
 
             var vm = new UserSettingsViewModel
             {
@@ -33,57 +30,41 @@ namespace WD.Mvc.Controllers
                 UnidadTemperatura = string.IsNullOrWhiteSpace(user.UnidadTemperatura) ? "C" : user.UnidadTemperatura
             };
 
-            ViewBag.Continentes = GetContinentes();
+            ViewBag.Continentes = new List<string> { "Africa", "America", "Asia", "Europa", "Oceania" };
             return View(vm);
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult UpdateProfile(UserSettingsViewModel model)
+        public async Task<IActionResult> UpdateProfile(UserSettingsViewModel model)
         {
-            var usuarioIdStr = HttpContext.Session.GetString("UsuarioId");
-            if (string.IsNullOrEmpty(usuarioIdStr))
-                return RedirectToAction("Login", "Usuarios");
+            var user = await _userService.GetUsuarioActualAsync(HttpContext);
+            if (user == null) return RedirectToAction("Login", "Usuarios");
 
-            int usuarioId = int.Parse(usuarioIdStr);
-            var user = _context.Usuarios.FirstOrDefault(u => u.IdUsuario == usuarioId);
-            if (user == null)
-                return RedirectToAction("Login", "Usuarios");
-
-            // Validaciones simples
             if (string.IsNullOrWhiteSpace(model.Nombre))
             {
                 TempData["SettingsError"] = "El nombre es requerido.";
-                ViewBag.Continentes = GetContinentes();
+                ViewBag.Continentes = new List<string> { "Africa", "America", "Asia", "Europa", "Oceania" };
                 return View("Index", model);
             }
 
-            // Actualizar perfil
             user.Nombre = model.Nombre.Trim();
             user.Continente = string.IsNullOrWhiteSpace(model.Continente) ? null : model.Continente.Trim();
             user.UnidadTemperatura = (model.UnidadTemperatura == "F") ? "F" : "C";
 
-            _context.SaveChanges();
+            await _usuarioRepo.UpdateAsync(user);
 
-            // Refrescar nombre en sesion para el header
-            HttpContext.Session.SetString("UsuarioNombre", user.Nombre);
-
+            _userService.RefreshSessionNombre(HttpContext, user.Nombre);
             TempData["SettingsMessage"] = "Preferencias actualizadas correctamente.";
             return RedirectToAction("Index");
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult ChangePassword(UserSettingsViewModel model)
+        public async Task<IActionResult> ChangePassword(UserSettingsViewModel model)
         {
-            var usuarioIdStr = HttpContext.Session.GetString("UsuarioId");
-            if (string.IsNullOrEmpty(usuarioIdStr))
-                return RedirectToAction("Login", "Usuarios");
-
-            int usuarioId = int.Parse(usuarioIdStr);
-            var user = _context.Usuarios.FirstOrDefault(u => u.IdUsuario == usuarioId);
-            if (user == null)
-                return RedirectToAction("Login", "Usuarios");
+            var user = await _userService.GetUsuarioActualAsync(HttpContext);
+            if (user == null) return RedirectToAction("Login", "Usuarios");
 
             if (string.IsNullOrWhiteSpace(model.PasswordActual) ||
                 string.IsNullOrWhiteSpace(model.PasswordNuevo) ||
@@ -92,7 +73,7 @@ namespace WD.Mvc.Controllers
                 TempData["SettingsError"] = "Complete todos los campos de contraseña.";
                 return RedirectToAction("Index");
             }
- 
+
             if (!string.Equals(user.Password, model.PasswordActual))
             {
                 TempData["SettingsError"] = "La contraseña actual es incorrecta.";
@@ -105,16 +86,11 @@ namespace WD.Mvc.Controllers
                 return RedirectToAction("Index");
             }
 
-            user.Password = model.PasswordNuevo;
-            _context.SaveChanges();
+            user.Password = model.PasswordNuevo; 
+            await _usuarioRepo.UpdateAsync(user);
 
             TempData["SettingsMessage"] = "Contraseña actualizada correctamente.";
             return RedirectToAction("Index");
         }
-
-        private static List<string> GetContinentes() => new()
-        {
-            "Africa", "America", "Asia", "Europa", "Oceania"
-        };
     }
 }
