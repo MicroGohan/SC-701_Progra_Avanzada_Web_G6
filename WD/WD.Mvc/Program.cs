@@ -6,28 +6,38 @@ using WD.Repository.Repositories;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
-builder.Services.AddControllersWithViews() .AddSessionStateTempDataProvider();
-builder.Services.AddHttpClient();
+
+builder.Services.AddControllersWithViews().AddSessionStateTempDataProvider();
+
 builder.Services.AddDbContext<WeatherDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("WeatherDB")));
+
+builder.Services.AddHttpClient<WeatherApiClient>(client =>
+{
+    var envBase = Environment.GetEnvironmentVariable("WEATHER_API_BASEURL");
+    var baseUrl = string.IsNullOrWhiteSpace(envBase) ? "https://localhost:7215/" : envBase;
+    client.BaseAddress = new Uri(baseUrl, UriKind.Absolute);
+});
+
+// Repositorios
 builder.Services.AddScoped<IUsuarioRepository, UsuarioRepository>();
+builder.Services.AddScoped<IFavoritoRepository, FavoritoRepository>();
+
+// Servicios
 builder.Services.AddSession();
 builder.Services.AddScoped<FavoritosService>();
+builder.Services.AddScoped<UserService>();
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Home/Error");
-    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 }
 
 app.UseHttpsRedirection();
 app.UseStaticFiles();
-
 app.UseRouting();
 app.UseSession();
 app.UseAuthorization();

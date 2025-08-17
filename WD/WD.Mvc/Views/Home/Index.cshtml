@@ -6,6 +6,7 @@
 
     // Obtiene la consulta de busqueda guardada en ViewBag o una cadena vacia si no existe
     var searchQuery = ViewBag.SearchQuery as string ?? "";
+    var unitSymbol = (ViewBag.TempUnitSymbol as string) ?? "°C";
 }
 
 <!-- Bootstrap -->
@@ -162,7 +163,7 @@
                                 @(string.IsNullOrEmpty(item.WeatherDescription) ? "N/A" : char.ToUpper(item.WeatherDescription[0]) + item.WeatherDescription[1..])
                             </p>
                             <p class="card-text">
-                                <strong>Temperatura:</strong> @item.Temperature °C
+                                <strong>Temperatura:</strong> @item.Temperature @unitSymbol
                             </p>
                             <p class="card-text">
                                 <strong>Humedad:</strong> @item.Humidity%
@@ -206,7 +207,7 @@
                             </p>
                             @if (fav.Temperatura != null)
                             {
-                                <p class="card-text"><strong>Temperatura:</strong> @fav.Temperatura °C</p>
+                                <p class="card-text"><strong>Temperatura:</strong> @fav.Temperatura @unitSymbol</p>
                             }
                             @if (fav.Humedad != null)
                             {
