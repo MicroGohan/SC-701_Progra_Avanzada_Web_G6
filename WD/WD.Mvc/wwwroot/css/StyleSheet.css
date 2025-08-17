@@ -1,0 +1,107 @@
+﻿
+:root {
+    --lapis-lazuli: #336699;
+    --carolina-blue: #86bbd8;
+    --light-green: #9ee493;
+    --hunter-green: #33673b;
+    --nyanza: #daf7dc;
+}
+
+body {
+    margin: 0;
+    font-family: 'Segoe UI', sans-serif;
+    background: linear-gradient(160deg, #0f1c2e, #1d2d50);
+    min-height: 100vh;
+    overflow-x: hidden;
+    color: white;
+}
+
+
+.hero {
+    padding: 80px 20px;
+    text-align: left;
+    position: relative;
+    /*background: linear-gradient(145deg, #86bbd8 0%, #daf7dc 100%);*/
+    color: var(--lapis-lazuli);
+}
+
+    .hero h1 {
+        font-size: 3rem;
+        font-weight: bold;
+    }
+
+    .hero p {
+        font-size: 1.25rem;
+        max-width: 500px;
+    }
+
+.search-form input[type="text"] {
+    max-width: 400px;
+    border-radius: 30px;
+    padding-left: 20px;
+}
+
+.search-form button {
+    border-radius: 30px;
+    background-color: var(--hunter-green);
+    border: none;
+    padding: 10px 24px;
+}
+
+    .search-form button:hover {
+        background-color: #2a5230;
+    }
+
+.read-more {
+    margin-top: 20px;
+    background-color: white;
+    color: var(--lapis-lazuli);
+    border: none;
+    padding: 10px 24px;
+    border-radius: 30px;
+}
+
+    .read-more:hover {
+        background-color: var(--light-green);
+        color: #000;
+    }
+
+.cloud-sun {
+    position: absolute;
+    right: 40px;
+    top: 60px;
+    max-width: 200px;
+    opacity: 0.8;
+}
+
+.glass-card {
+    background: rgba(255, 255, 255, 0.05); /* transparencia suave */
+    border-radius: 15px;
+    backdrop-filter: blur(10px); /* efecto glass */
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.1); /* borde tenue */
+    color: white;
+}
+
+
+/* Aplica texto negro en el modal */
+#favoritoModal .modal-content,
+#favoritoModal .modal-header,
+#favoritoModal .modal-body,
+#favoritoModal .modal-footer {
+    color: black;
+}
+
+#descripcionModal .modal-content,
+#descripcionModal .modal-header,
+#descripcionModal .modal-body,
+#descripcionModal .modal-footer {
+    color: black;
+}
+
+#favoritoDuplicadoModal .modal-content,
+#favoritoDuplicadoModal .modal-header,
+#favoritoDuplicadoModal .modal-body,
+#favoritoDuplicadoModal .modal-footer {
+    color: black;
+}
