@@ -21,6 +21,10 @@ public partial class Usuario
     // Fecha en que el usuario se registro, puede ser nula
     public DateOnly? FechaRegistro { get; set; }
 
+    // Preferencias del usuario
+    public string Continente { get; set; } = "America"; // Continente
+    public string UnidadTemperatura { get; set; } = "C"; // Solo "C" o "F"
+
     // Coleccion de favoritos asociados a este usuario (relacion uno a muchos)
     public virtual ICollection<Favorito> Favoritos { get; set; } = new List<Favorito>();
 }

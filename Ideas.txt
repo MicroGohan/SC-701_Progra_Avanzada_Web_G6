@@ -1,8 +1,8 @@
-1. Tener un landing page con el top 10 ciudades del continente del usuario 
+1. Tener un landing page con el top 10 ciudades del continente del usuario - Mejor no por los API Reqs
 
-2. En user settings tener opciones para definir continente, medida de temperatura, cambiar contra, cambiar nombre usuario, etc. Diego
+2. En user settings tener opciones para definir continente, medida de temperatura, cambiar contra, cambiar nombre usuario, etc. listo
 
-3. Tener una opción para desplegar la info avanzada del clima de una region. Diego
+3. Tener una opción para desplegar la info avanzada del clima de una region. listo
 
 4. Que se muestren el top 5 favoritos del usuario arriba de la pagina. listo
 
