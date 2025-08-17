@@ -7,6 +7,8 @@
 }
 <!-- Bootstrap -->
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+<link rel="stylesheet" href="~/css/StyleSheet.css" asp-append-version="true" />
+
 
 <h2 class="mt-4">🌟 Mis Favoritos</h2>
 
@@ -20,9 +22,9 @@ else
         @foreach (var fav in Model)
         {
             <div class="col">
-                <div class="card shadow h-100" style="border-radius:15px;">
-                    <div class="card-body bg-light">
-                        <h5 class="card-title">@fav.Favorito.Ciudad, @fav.Favorito.Pais</h5>
+                <div class="card shadow h-100 glass-card" style="border-radius:15px;">
+                    <div class="card-body">
+                        <h5 class="card-title text-white">@fav.Favorito.Ciudad, @fav.Favorito.Pais</h5>
                         @if (!string.IsNullOrWhiteSpace(fav.Favorito.Descripcion))
                         {
                             <p class="card-text">
@@ -35,7 +37,7 @@ else
                             Modificar descripción
                         </button>
                         <p class="card-text">
-                            <small class="text-muted">
+                            <small class="text-white">
                                 Agregado el @fav.Favorito.FechaAgregado.ToString("dddd dd 'de' MMMM 'de' yyyy", new System.Globalization.CultureInfo("es-ES"))
                             </small>
                         </p>
@@ -57,7 +59,7 @@ else
                                 <strong>Clima:</strong> @fav.WeatherDescription
                             </p>
                         }
-
+                      
                         <button type="button"
                                 class="btn btn-sm btn-primary ver-clima-btn"
                                 data-ciudad="@fav.Favorito.Ciudad"
@@ -67,28 +69,33 @@ else
                                 data-bs-target="#weatherDetailsModal">
                             Ver Clima
                         </button>
+                      
+                        <div class="d-flex flex-wrap align-items-center gap-2 my-3">
+                            <a asp-controller="Home" asp-action="Index"
+                               asp-route-searchQuery="@($"{fav.Favorito.Ciudad}, {fav.Favorito.Pais}")"
+                               class="btn btn-outline-primary btn-sm">
+                                Ver Clima
+                            </a>
 
-                        <br />
-                        <form asp-controller="Favorites" asp-action="UpdatePrioridad" method="post" class="d-flex align-items-center gap-2">
-                            <input type="hidden" name="idFavorito" value="@fav.Favorito.IdFavorito" />
-                            @{
-                                var seleccionadoBajo = fav.Favorito.Prioridad == "bajo" ? "selected" : "";
-                                var seleccionadoMedio = fav.Favorito.Prioridad == "medio" ? "selected" : "";
-                                var seleccionadoAlto = fav.Favorito.Prioridad == "alto" ? "selected" : "";
-                            }
-                            <select name="prioridad" class="form-select form-select-sm w-auto">
-                                <option value="bajo" selected="@(fav.Favorito.Prioridad == "bajo")">Bajo</option>
-                                <option value="medio" selected="@(fav.Favorito.Prioridad == "medio")">Medio</option>
-                                <option value="alto" selected="@(fav.Favorito.Prioridad == "alto")">Alto</option>
-                            </select>
-                            <button type="submit" class="btn btn-success btn-sm">Guardar</button>
-                        </form>
-                        <br />
-                        <form asp-controller="Favorites" asp-action="Delete" method="post" class="d-inline">
+                            <form asp-controller="Favorites" asp-action="UpdatePrioridad" method="post" class="d-flex align-items-center gap-2">
+                                <input type="hidden" name="idFavorito" value="@fav.Favorito.IdFavorito" />
+                                <select name="prioridad" class="form-select form-select-sm w-auto">
+                                    <option value="bajo" selected="@(fav.Favorito.Prioridad == "bajo")">Bajo</option>
+                                    <option value="medio" selected="@(fav.Favorito.Prioridad == "medio")">Medio</option>
+                                    <option value="alto" selected="@(fav.Favorito.Prioridad == "alto")">Alto</option>
+                                </select>
+                                <button type="submit" class="btn btn-success btn-sm">Guardar</button>
+                            </form>
+                        </div>
+
+                        <form asp-controller="Favorites" asp-action="Delete" method="post">
+                        
+
                             @Html.AntiForgeryToken()
                             <input type="hidden" name="idFavorito" value="@fav.Favorito.IdFavorito" />
-                            <button type="submit" class="btn btn-danger btn-sm">Eliminar</button>
+                            <button type="submit" class="btn btn-outline-danger btn-sm">Eliminar</button>
                         </form>
+
                     </div>
                 </div>
             </div>
