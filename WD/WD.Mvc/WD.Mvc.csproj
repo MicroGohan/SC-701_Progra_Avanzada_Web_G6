@@ -10,4 +10,12 @@
     <ProjectReference Include="..\WD.Repository\WD.Repository.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Include="wwwroot\css\StyleSheet.css" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="wwwroot\imagenes\" />
+  </ItemGroup>
+
 </Project>
