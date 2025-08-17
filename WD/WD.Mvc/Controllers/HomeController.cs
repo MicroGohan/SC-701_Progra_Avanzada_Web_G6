@@ -30,8 +30,8 @@ namespace WD.Mvc.Controllers
             var (units, symbol) = await _userService.GetTemperatureUnitsAsync(HttpContext);
             ViewBag.TempUnitSymbol = symbol;
 
-            var top5 = await _favoritosService.GetTop5FavoritosAsync(usuarioId.Value, units, ct);
-            ViewBag.Top5Favoritos = top5;
+            var top3 = await _favoritosService.GetTopFavoritosAsync(usuarioId.Value, 3, units, ct);
+            ViewBag.Top3Favoritos = top3;
 
             return View(null);
         }
@@ -43,11 +43,15 @@ namespace WD.Mvc.Controllers
             if (usuarioId is null) return RedirectToAction("Login", "Usuarios");
 
             ViewBag.SearchQuery = searchQuery;
-            if (string.IsNullOrWhiteSpace(searchQuery))
-                return View(null);
 
             var (units, symbol) = await _userService.GetTemperatureUnitsAsync(HttpContext);
             ViewBag.TempUnitSymbol = symbol;
+
+            var top3 = await _favoritosService.GetTopFavoritosAsync(usuarioId.Value, 3, units, ct);
+            ViewBag.Top3Favoritos = top3;
+
+            if (string.IsNullOrWhiteSpace(searchQuery))
+                return View(null);
 
             var results = await _weatherApi.SearchAsync(searchQuery, 10, units, ct);
             return View(results);

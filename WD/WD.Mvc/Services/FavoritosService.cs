@@ -15,10 +15,18 @@ namespace WD.Mvc.Services
             _weatherApi = weatherApi;
         }
 
+
         public async Task<List<FavoritoClimaViewModel>> GetTop5FavoritosAsync(int usuarioId, string units = "metric", CancellationToken ct = default)
         {
             var favoritos = await _favoritoRepo.GetTop5ByUserAsync(usuarioId, ct);
             return await EnriquecerConClimaAsync(favoritos, units, ct);
+        }
+
+        public async Task<List<FavoritoClimaViewModel>> GetTopFavoritosAsync(int usuarioId, int count, string units = "metric", CancellationToken ct = default)
+        {
+            var favoritosOrdenados = await _favoritoRepo.GetByUserOrderedAsync(usuarioId, ct);
+            var top = favoritosOrdenados.Take(count);
+            return await EnriquecerConClimaAsync(top, units, ct);
         }
 
         public async Task<List<FavoritoClimaViewModel>> GetFavoritosConClimaAsync(int usuarioId, string units, CancellationToken ct = default)

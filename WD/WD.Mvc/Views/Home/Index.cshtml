@@ -1,210 +1,30 @@
 ﻿@model List<WD.Models.WDModels.WeatherResult>?
 
 @{
-    // Define el titulo de la pagina que se montrara en la pestaña del navegador
     ViewData["Title"] = "Weather Search";
-
-    // Obtiene la consulta de busqueda guardada en ViewBag o una cadena vacia si no existe
     var searchQuery = ViewBag.SearchQuery as string ?? "";
     var unitSymbol = (ViewBag.TempUnitSymbol as string) ?? "°C";
 }
 
-<!-- Bootstrap -->
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
 <link rel="stylesheet" href="~/css/StyleSheet.css" asp-append-version="true" />
 
-
-<body>
-    <!--Hero de busqueda-->
-    <div class="container-fluid hero">
-        <div class="container">
-            <h1>TempStream</h1>
-            <p>Consulta el clima en tu ciudad o cualquier parte del mundo en segundos.</p>
-
-            <!-- Formulario que envia una peticion POST al metodo Index del controlador Home -->
-            <form method="post" asp-controller="Home" asp-action="Index" class="search-form d-flex flex-column flex-sm-row gap-2 align-items-center mt-4">
-                <!-- Campo de texto para ingresar el nombre de la ciudad o pais a buscar -->
-                <input type="text" name="searchQuery" class="form-control" placeholder="Ej. San Jose, Lima, Madrid..." value="@searchQuery" />
-                <!-- Boton para enviar el formulario -->
-                <button type="submit" class="btn btn-primary">Buscar</button>
-            </form>
-            <!-- Optional imagen -->
-            <img src="~/imagenes/sun-cloud.png" class="cloud-sun" alt="Sun and Cloud" />
-        </div>
-    </div>
-
-    @if (TempData["FavoritoMensaje"] != null && TempData["UltimoFavoritoId"] != null)
-    {
-        <div class="modal fade" id="favoritoModal" tabindex="-1" aria-labelledby="modalLabel" aria-hidden="true">
-            <div class="modal-dialog">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="modalLabel">Éxito</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
-                    </div>
-                    <div class="modal-body">
-                        @if (TempData["FavoritoMensaje"] != null && TempData["UltimoFavoritoId"] != null)
-                        {
-                            <div class="alert alert-success" role="alert">
-                                @Html.Raw(TempData["FavoritoMensaje"])
-                            </div>
-                            <button type="button" class="btn btn-info" data-bs-toggle="modal" data-bs-target="#descripcionModal" data-bs-dismiss="modal">
-                                Agregar descripción
-                            </button>
-                        }
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Modal para agregar descripción -->
-        <div class="modal fade" id="descripcionModal" tabindex="-1" aria-labelledby="descripcionLabel" aria-hidden="true">
-            <div class="modal-dialog">
-                <div class="modal-content">
-                    <form asp-controller="Favorites" asp-action="UpdateDescripcion" method="post">
-                        @Html.AntiForgeryToken()
-                        <div class="modal-header">
-                            <h5 class="modal-title" id="descripcionLabel">Agregar descripción</h5>
-                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
-                        </div>
-                        <div class="modal-body">
-                            <input type="hidden" name="idFavorito" value="@TempData["UltimoFavoritoId"]" />
-                            <div class="mb-3">
-                                <label for="descripcion" class="form-label">Descripción</label>
-                                <textarea name="descripcion" class="form-control" maxlength="250" required></textarea>
-                            </div>
-                        </div>
-                        <div class="modal-footer">
-                            <button type="submit" class="btn btn-success">Guardar</button>
-                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                        </div>
-                    </form>
-                </div>
-            </div>
-        </div>
-
-        <script>
-            window.addEventListener('DOMContentLoaded', function () {
-                var modal = new bootstrap.Modal(document.getElementById('favoritoModal'));
-                modal.show();
-            });
-        </script>
-
-        <!-- Script para mostrar el modal de descripción guardada -->
-        @if (TempData["DescripcionGuardada"] != null)
-        {
-            <div class="modal fade" id="descripcionGuardadaModal" tabindex="-1" aria-labelledby="descGuardadaLabel" aria-hidden="true">
-                <div class="modal-dialog">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h5 class="modal-title" id="descGuardadaLabel">Éxito</h5>
-                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
-                        </div>
-                        <div class="modal-body">
-                            <div class="alert alert-success" role="alert">
-                                @TempData["DescripcionGuardada"]
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <script>
-                window.addEventListener('DOMContentLoaded', function () {
-                    var modal = new bootstrap.Modal(document.getElementById('descripcionGuardadaModal'));
-                    modal.show();
-                });
-            </script>
-        }
-    }
-
-    @if (TempData["FavoritoMensaje"] != null && TempData["UltimoFavoritoId"] == null)
-    {
-        <div class="modal fade" id="favoritoDuplicadoModal" tabindex="-1" aria-labelledby="modalDuplicadoLabel" aria-hidden="true">
-            <div class="modal-dialog">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="modalDuplicadoLabel">Aviso</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
-                    </div>
-                    <div class="modal-body">
-                        <div class="alert alert-warning" role="alert">
-                            @Html.Raw(TempData["FavoritoMensaje"])
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <script>
-            window.addEventListener('DOMContentLoaded', function () {
-                var modal = new bootstrap.Modal(document.getElementById('favoritoDuplicadoModal'));
-                modal.show();
-            });
-        </script>
-    }
-</body>
-
-<!-- Si el modelo no es nulo y contiene elementos, muestra la tabla con resultados -->
-@if (Model != null && Model.Any())
+@if (ViewBag.Top3Favoritos != null)
 {
-    <div class="container mt-5">
-        <h3 class="mb-4 text-center text-primary">Resultados del clima</h3>
-
-        <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
-            <!-- Recorre cada elemento del modelo para mostrar su informacion -->
-            @foreach (var item in Model)
-            {
-                <div class="col">
-                    <div class="card shadow h-100 glass-card" style="border-radius: 15px;">
-                        <div class="card-body">
-                            <h5 class="card-title text-success fw-bold">@item.Name, @item.Country</h5>
-                            <p class="card-text text-white">
-                                <strong>Descripción:</strong>
-                                <!-- Muestra la descripcion con la primera letra en mayuscula -->
-                                @(string.IsNullOrEmpty(item.WeatherDescription) ? "N/A" : char.ToUpper(item.WeatherDescription[0]) + item.WeatherDescription[1..])
-                            </p>
-                            <p class="card-text">
-                                <strong>Temperatura:</strong> @item.Temperature @unitSymbol
-                            </p>
-                            <p class="card-text">
-                                <strong>Humedad:</strong> @item.Humidity%
-                            </p>
-                            <!-- botón agregar a favoritos -->
-                            <form asp-controller="Favorites" asp-action="Add" method="post" class="d-inline">
-                                @Html.AntiForgeryToken()
-                                <input type="hidden" name="ciudad" value="@item.Name" />
-                                <input type="hidden" name="pais" value="@item.Country" />
-                                <button type="submit" class="btn btn-sm btn-outline-warning">⭐ Añadir a favoritos</button>
-                            </form>
-                        </div>
-                    </div>
-                </div>
-            }
-        </div>
-    </div>
-}
-
-@if (ViewBag.Top5Favoritos != null)
-{
-    var top5 = ViewBag.Top5Favoritos as List<WD.Mvc.Models.FavoritoClimaViewModel>;
-    <div class="container mt-5">
-        <h3 class="mb-4 text-center text-warning">Top 5 Favoritos</h3>
-        <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
-            @foreach (var fav in top5)
+    var top3 = ViewBag.Top3Favoritos as List<WD.Mvc.Models.FavoritoClimaViewModel>;
+    <div class="container mt-3">
+        <h3 class="mb-3 text-warning">Top 3 Favoritos</h3>
+        <div class="row row-cols-1 row-cols-md-3 g-3">
+            @foreach (var fav in top3)
             {
                 <div class="col">
                     <div class="card shadow h-100 glass-card" style="border-radius: 15px;">
                         <div class="card-body">
                             <h5 class="card-title text-success fw-bold">@fav.Favorito.Ciudad, @fav.Favorito.Pais</h5>
-                            <p class="card-text"><strong>Prioridad:</strong> @fav.Favorito.Prioridad</p>
                             @if (!string.IsNullOrWhiteSpace(fav.Favorito.Descripcion))
                             {
                                 <p class="card-text text-white"><strong>Descripción:</strong> @fav.Favorito.Descripcion</p>
                             }
-                            <p class="card-text">
-                                <small class="text-white">
-                                    Agregado el @fav.Favorito.FechaAgregado.ToString("dddd dd 'de' MMMM 'de' yyyy", new System.Globalization.CultureInfo("es-ES"))
-                                </small>
-                            </p>
                             @if (fav.Temperatura != null)
                             {
                                 <p class="card-text"><strong>Temperatura:</strong> @fav.Temperatura @unitSymbol</p>
@@ -217,6 +37,163 @@
                             {
                                 <p class="card-text"><strong>Clima:</strong> @fav.WeatherDescription</p>
                             }
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+}
+
+<!--Hero de busqueda-->
+<div class="container-fluid hero">
+    <div class="container">
+        <h1>TempStream</h1>
+        <p>Consulta el clima en tu ciudad o cualquier parte del mundo en segundos.</p>
+
+        <form method="post" asp-controller="Home" asp-action="Index" class="search-form d-flex flex-column flex-sm-row gap-2 align-items-center mt-4">
+            <input type="text" name="searchQuery" class="form-control" placeholder="Ej. San Jose, Lima, Madrid..." value="@searchQuery" />
+            <button type="submit" class="btn btn-primary">Buscar</button>
+        </form>
+
+        <img src="~/imagenes/sun-cloud.png" class="cloud-sun" alt="Sun and Cloud" />
+    </div>
+</div>
+
+@if (TempData["FavoritoMensaje"] != null && TempData["UltimoFavoritoId"] != null)
+{
+    <div class="modal fade" id="favoritoModal" tabindex="-1" aria-labelledby="modalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modalLabel">Éxito</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                </div>
+                <div class="modal-body">
+                    @if (TempData["FavoritoMensaje"] != null && TempData["UltimoFavoritoId"] != null)
+                    {
+                        <div class="alert alert-success" role="alert">
+                            @Html.Raw(TempData["FavoritoMensaje"])
+                        </div>
+                        <button type="button" class="btn btn-info" data-bs-toggle="modal" data-bs-target="#descripcionModal" data-bs-dismiss="modal">
+                            Agregar descripción
+                        </button>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="descripcionModal" tabindex="-1" aria-labelledby="descripcionLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <form asp-controller="Favorites" asp-action="UpdateDescripcion" method="post">
+                    @Html.AntiForgeryToken()
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="descripcionLabel">Agregar descripción</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                    </div>
+                    <div class="modal-body">
+                        <input type="hidden" name="idFavorito" value="@TempData["UltimoFavoritoId"]" />
+                        <div class="mb-3">
+                            <label for="descripcion" class="form-label">Descripción</label>
+                            <textarea name="descripcion" class="form-control" maxlength="250" required></textarea>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-success">Guardar</button>
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        window.addEventListener('DOMContentLoaded', function () {
+            var modal = new bootstrap.Modal(document.getElementById('favoritoModal'));
+            modal.show();
+        });
+    </script>
+
+    @if (TempData["DescripcionGuardada"] != null)
+    {
+        <div class="modal fade" id="descripcionGuardadaModal" tabindex="-1" aria-labelledby="descGuardadaLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="descGuardadaLabel">Éxito</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="alert alert-success" role="alert">
+                            @TempData["DescripcionGuardada"]
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <script>
+            window.addEventListener('DOMContentLoaded', function () {
+                var modal = new bootstrap.Modal(document.getElementById('descripcionGuardadaModal'));
+                modal.show();
+            });
+        </script>
+    }
+}
+
+@if (TempData["FavoritoMensaje"] != null && TempData["UltimoFavoritoId"] == null)
+{
+    <div class="modal fade" id="favoritoDuplicadoModal" tabindex="-1" aria-labelledby="modalDuplicadoLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modalDuplicadoLabel">Aviso</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="alert alert-warning" role="alert">
+                        @Html.Raw(TempData["FavoritoMensaje"])
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+        window.addEventListener('DOMContentLoaded', function () {
+            var modal = new bootstrap.Modal(document.getElementById('favoritoDuplicadoModal'));
+            modal.show();
+        });
+    </script>
+}
+
+@if (Model != null && Model.Any())
+{
+    <div class="container mt-5">
+        <h3 class="mb-4 text-center text-primary">Resultados del clima</h3>
+        <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+            @foreach (var item in Model)
+            {
+                <div class="col">
+                    <div class="card shadow h-100 glass-card" style="border-radius: 15px;">
+                        <div class="card-body">
+                            <h5 class="card-title text-success fw-bold">@item.Name, @item.Country</h5>
+                            <p class="card-text text-white">
+                                <strong>Descripción:</strong>
+                                @(string.IsNullOrEmpty(item.WeatherDescription) ? "N/A" : char.ToUpper(item.WeatherDescription[0]) + item.WeatherDescription[1..])
+                            </p>
+                            <p class="card-text">
+                                <strong>Temperatura:</strong> @item.Temperature @unitSymbol
+                            </p>
+                            <p class="card-text">
+                                <strong>Humedad:</strong> @item.Humidity%
+                            </p>
+                            <form asp-controller="Favorites" asp-action="Add" method="post" class="d-inline">
+                                @Html.AntiForgeryToken()
+                                <input type="hidden" name="ciudad" value="@item.Name" />
+                                <input type="hidden" name="pais" value="@item.Country" />
+                                <button type="submit" class="btn btn-sm btn-outline-warning">⭐ Añadir a favoritos</button>
+                            </form>
                         </div>
                     </div>
                 </div>

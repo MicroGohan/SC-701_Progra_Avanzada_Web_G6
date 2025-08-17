@@ -59,7 +59,7 @@ else
                                 <strong>Clima:</strong> @fav.WeatherDescription
                             </p>
                         }
-                      
+
                         <button type="button"
                                 class="btn btn-sm btn-primary ver-clima-btn"
                                 data-ciudad="@fav.Favorito.Ciudad"
@@ -69,7 +69,7 @@ else
                                 data-bs-target="#weatherDetailsModal">
                             Ver Clima
                         </button>
-                      
+
                         <div class="d-flex flex-wrap align-items-center gap-2 my-3">
                             <a asp-controller="Home" asp-action="Index"
                                asp-route-searchQuery="@($"{fav.Favorito.Ciudad}, {fav.Favorito.Pais}")"
@@ -89,7 +89,7 @@ else
                         </div>
 
                         <form asp-controller="Favorites" asp-action="Delete" method="post">
-                        
+
 
                             @Html.AntiForgeryToken()
                             <input type="hidden" name="idFavorito" value="@fav.Favorito.IdFavorito" />
