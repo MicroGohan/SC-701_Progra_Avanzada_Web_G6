@@ -98,17 +98,17 @@ namespace WD.Mvc.Controllers
         // NUEVO: cambiar visibilidad del Top 3 sin afectar el resto
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> UpdateTopPublico(bool topPublico)
+        public async Task<IActionResult> UpdateTopPublico(bool TopFavoritosPublico)
         {
             var user = await _userService.GetUsuarioActualAsync(HttpContext);
             if (user == null) return RedirectToAction("Login", "Usuarios");
 
-            user.TopFavoritosPublico = topPublico;
+            user.TopFavoritosPublico = TopFavoritosPublico;
             await _usuarioRepo.UpdateAsync(user);
 
-            TempData["SettingsMessage"] = topPublico
-                ? "? Tu Top 3 ahora es público."
-                : "?? Tu Top 3 ahora es privado.";
+            TempData["SettingsMessage"] = TopFavoritosPublico
+                ? "Tu Top 3 ahora es público."
+                : "Tu Top 3 ahora es privado.";
 
             return RedirectToAction("Index");
         }

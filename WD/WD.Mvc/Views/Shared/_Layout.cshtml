@@ -32,6 +32,7 @@
                 <div class="collapse navbar-collapse justify-content-end text-white" id="navbarRight">
                     @{
                         // Obtiene el nombre del usuario almacenado en sesion
+                        var usuarioId = Context.Session.GetString("UsuarioId");
                         var usuarioNombre = Context.Session.GetString("UsuarioNombre");
                     }
                     <ul class="navbar-nav mb-2 mb-lg-0 text-white">
@@ -39,29 +40,32 @@
                         @if (!string.IsNullOrEmpty(usuarioNombre))
                         {
                             <li class="nav-item">
-                                <span class="nav-link text-dark text-white">Bienvenido, @usuarioNombre</span>
+                                <span class="nav-link text-white">Bienvenido, @usuarioNombre</span>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="" asp-controller="Settings" asp-action="Index">Configuración</a>
+                                <a class="nav-link text-white" asp-area="" asp-controller="Settings" asp-action="Index">Configuración</a>
                             </li>
                             <li class="nav-item">
                                 <!-- Enlace para cerrar sesion que ejecuta un form oculto -->
-                                <a href="#" class="nav-link text-dark text-white" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">Cerrar sesion</a>
+                                <a href="#" class="nav-link text-white" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">Cerrar sesion</a>
                                 <form id="logout-form" asp-controller="Usuarios" asp-action="Logout" method="post" style="display:none;"></form>
                             </li>
                             <!-- Enlace a la pagina de favoritos -->
                             <li class="nav-item">
-                                <a class="nav-link text-dark text-white" asp-area="" asp-controller="Favorites" asp-action="Index">Mis Favoritos</a>
+                                <a class="nav-link text-white" asp-area="" asp-controller="Favorites" asp-action="Index">Mis Favoritos</a>
+                            </li>
+                            @* Link público solo si hay sesión *@
+                            <li class="nav-item">
+                                <a class="nav-link text-white" asp-controller="Public" asp-action="Explore">Explorar Tops Públicos</a>
                             </li>
                         }
                         else
                         {
-                            <!-- Si no hay usuario logueado, muestra opciones para registrarse y login -->
                             <li class="nav-item">
-                                <a class="nav-link text-white" asp-area="" asp-controller="Usuarios" asp-action="SignUp">Registrarse</a>
+                                <a class="nav-link text-white" asp-controller="Usuarios" asp-action="SignUp">Registrarse</a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link text-white" asp-area="" asp-controller="Usuarios" asp-action="Login">Login</a>
+                                <a class="nav-link text-white" asp-controller="Usuarios" asp-action="Login">Login</a>
                             </li>
                         }
                     </ul>
