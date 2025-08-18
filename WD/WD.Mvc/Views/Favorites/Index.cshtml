@@ -71,12 +71,6 @@ else
                         </button>
 
                         <div class="d-flex flex-wrap align-items-center gap-2 my-3">
-                            <a asp-controller="Home" asp-action="Index"
-                               asp-route-searchQuery="@($"{fav.Favorito.Ciudad}, {fav.Favorito.Pais}")"
-                               class="btn btn-outline-primary btn-sm">
-                                Ver Clima
-                            </a>
-
                             <form asp-controller="Favorites" asp-action="UpdatePrioridad" method="post" class="d-flex align-items-center gap-2">
                                 <input type="hidden" name="idFavorito" value="@fav.Favorito.IdFavorito" />
                                 <select name="prioridad" class="form-select form-select-sm w-auto">
@@ -89,8 +83,6 @@ else
                         </div>
 
                         <form asp-controller="Favorites" asp-action="Delete" method="post">
-
-
                             @Html.AntiForgeryToken()
                             <input type="hidden" name="idFavorito" value="@fav.Favorito.IdFavorito" />
                             <button type="submit" class="btn btn-outline-danger btn-sm">Eliminar</button>
