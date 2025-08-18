@@ -12,29 +12,52 @@
             <div class="col">
                 <div class="card shadow h-100 glass-card" style="border-radius: 15px;">
                     <div class="card-body">
-                        <h5 class="card-title text-success fw-bold">@fav.Favorito.Ciudad, @fav.Favorito.Pais</h5>
+                        <div class="d-flex justify-content-between align-items-center flex-wrap mb-2">
+                            <h5 class="card-title text-success fw-bold mb-0">
+                                @fav.Favorito.Ciudad, @fav.Favorito.Pais
+                            </h5>
+                            <button type="button"
+                                    class="btn btn-sm btn-info text-white"
+                                    data-bs-toggle="modal"
+                                    data-bs-target="#@modalId">
+                                Editar
+                            </button>
+                          
+                        </div>
 
                         @if (!string.IsNullOrWhiteSpace(fav.Favorito.Descripcion))
                         {
                             <p class="card-text text-white"><strong>Descripción:</strong> @fav.Favorito.Descripcion</p>
                         }
 
-                        <div class="mb-2">
-                            @if (fav.Temperatura != null)
-                            {
-                                <span class="me-3"><strong>Temp:</strong> @fav.Temperatura @unitSymbol</span>
-                            }
-                            @if (fav.Humedad != null)
-                            {
-                                <span class="me-3"><strong>Humedad:</strong> @fav.Humedad%</span>
-                            }
-                            @if (!string.IsNullOrWhiteSpace(fav.WeatherDescription))
-                            {
-                                <span class="me-3"><strong>Clima:</strong> @fav.WeatherDescription</span>
-                            }
-                        </div>
+                        <div class="d-flex justify-content-between align-items-center flex-wrap mb-2">
+                            <!-- Info del clima -->
+                            <ul class="list-unstyled mb-2 text-white">
+                                @if (fav.Temperatura != null)
+                                {
+                                    <li>
+                                        <i class="bi bi-thermometer-half me-1"></i>
+                                        <strong>Temp:</strong> @fav.Temperatura @unitSymbol
+                                    </li>
+                                }
+                                @if (fav.Humedad != null)
+                                {
+                                    <li>
+                                        <i class="bi bi-droplet-fill me-1"></i>
+                                        <strong>Humedad:</strong> @fav.Humedad%
+                                    </li>
+                                }
+                                @if (!string.IsNullOrWhiteSpace(fav.WeatherDescription))
+                                {
+                                    <li>
+                                        <i class="bi bi-clouds-fill me-1"></i>
+                                        <strong>Clima:</strong> @fav.WeatherDescription
+                                    </li>
+                                }
+                            </ul>
 
-                        <div class="d-flex flex-wrap gap-2">
+
+                            <!-- Botón al lado -->
                             <button type="button"
                                     class="btn btn-sm btn-primary ver-clima-btn"
                                     data-ciudad="@fav.Favorito.Ciudad"
@@ -42,25 +65,22 @@
                                     data-units="@apiUnits"
                                     data-bs-toggle="modal"
                                     data-bs-target="#weatherDetailsModal">
-                                Ver Clima
+                                <i class="bi bi-eye me-1"></i> Ver Mas
                             </button>
+                        </div>
 
-                            <button type="button"
-                                    class="btn btn-sm btn-info"
-                                    data-bs-toggle="modal"
-                                    data-bs-target="#@modalId">
-                                Editar
-                            </button>
 
-                            <form asp-controller="Favorites" asp-action="Delete" method="post" class="d-inline delete-fav-form">
-                                @Html.AntiForgeryToken()
-                                <input type="hidden" name="idFavorito" value="@fav.Favorito.IdFavorito" />
+                            
+
+                            <!--<form asp-controller="Favorites" asp-action="Delete" method="post" class="d-inline delete-fav-form">
+                                @*Html.AntiForgeryToken()
+                                <input type="hidden" name="idFavorito" value="@fav.Favorito.IdFavorito" />*@
                                 <button type="submit" class="btn btn-sm btn-outline-danger">Eliminar</button>
-                            </form>
+                            </form>-->
                         </div>
                     </div>
                 </div>
-            </div>
+            
 
             <!-- Modal Editar (Descripción y Prioridad) -->
             <div class="modal fade" id="@modalId" tabindex="-1" aria-labelledby="@($"{modalId}_label")" aria-hidden="true">
