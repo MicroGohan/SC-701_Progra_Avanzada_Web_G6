@@ -7,7 +7,8 @@ public class UserSettingsViewModel
     public string Email { get; set; } = string.Empty; // Solo lectura en UI
     public string? Continente { get; set; }
     public string UnidadTemperatura { get; set; } = "C"; // "C" o "F"
-
+    // NUEVO: visibilidad Top 3
+    public bool TopFavoritosPublico { get; set; }
     // Cambio de contraseña
     public string? PasswordActual { get; set; }
     public string? PasswordNuevo { get; set; }

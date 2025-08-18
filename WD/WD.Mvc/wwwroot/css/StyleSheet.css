@@ -100,7 +100,9 @@ body {
 #favoritoDuplicadoModal .modal-content,
 #favoritoDuplicadoModal .modal-header,
 #favoritoDuplicadoModal .modal-body,
-#favoritoDuplicadoModal .modal-footer { color: black; }
+#favoritoDuplicadoModal .modal-footer {
+    color: black;
+}
 
 /* NUEVO: Texto negro por defecto en modales (fondo claro) */
 .modal-content,

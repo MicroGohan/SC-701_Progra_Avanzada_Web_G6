@@ -27,7 +27,9 @@ namespace WD.Mvc.Controllers
                 Nombre = user.Nombre,
                 Email = user.Email,
                 Continente = user.Continente,
-                UnidadTemperatura = string.IsNullOrWhiteSpace(user.UnidadTemperatura) ? "C" : user.UnidadTemperatura
+                UnidadTemperatura = string.IsNullOrWhiteSpace(user.UnidadTemperatura) ? "C" : user.UnidadTemperatura,
+                // NUEVO
+                TopFavoritosPublico = user.TopFavoritosPublico
             };
 
             ViewBag.Continentes = new List<string> { "Africa", "America", "Asia", "Europa", "Oceania" };
@@ -86,10 +88,28 @@ namespace WD.Mvc.Controllers
                 return RedirectToAction("Index");
             }
 
-            user.Password = model.PasswordNuevo; 
+            user.Password = model.PasswordNuevo;
             await _usuarioRepo.UpdateAsync(user);
 
             TempData["SettingsMessage"] = "Contraseña actualizada correctamente.";
+            return RedirectToAction("Index");
+        }
+
+        // NUEVO: cambiar visibilidad del Top 3 sin afectar el resto
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> UpdateTopPublico(bool topPublico)
+        {
+            var user = await _userService.GetUsuarioActualAsync(HttpContext);
+            if (user == null) return RedirectToAction("Login", "Usuarios");
+
+            user.TopFavoritosPublico = topPublico;
+            await _usuarioRepo.UpdateAsync(user);
+
+            TempData["SettingsMessage"] = topPublico
+                ? "? Tu Top 3 ahora es público."
+                : "?? Tu Top 3 ahora es privado.";
+
             return RedirectToAction("Index");
         }
     }

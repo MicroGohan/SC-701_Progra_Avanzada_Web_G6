@@ -25,6 +25,9 @@ public partial class Usuario
     public string Continente { get; set; } = "America"; // Continente
     public string UnidadTemperatura { get; set; } = "C"; // Solo "C" o "F"
 
+    // NUEVO: Visibilidad del Top 3
+    public bool TopFavoritosPublico { get; set; } = false;
+
     // Coleccion de favoritos asociados a este usuario (relacion uno a muchos)
     public virtual ICollection<Favorito> Favoritos { get; set; } = new List<Favorito>();
 }
