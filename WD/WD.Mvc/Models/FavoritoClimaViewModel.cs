@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace WD.Mvc.Models
 {
+    // ViewModel para mostrar un favorito junto con su clima
     public class FavoritoClimaViewModel
     {
         public WD.Models.Favorito Favorito { get; set; } = null!;

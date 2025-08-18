@@ -1,5 +1,6 @@
 namespace WD.Mvc.Models;
 
+// ViewModel que representa el formulario de registro de un nuevo usuario
 public class SignUpViewModel
 {
     public string Nombre { get; set; } = string.Empty;

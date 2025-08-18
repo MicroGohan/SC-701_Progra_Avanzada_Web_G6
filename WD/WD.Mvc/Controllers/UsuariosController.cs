@@ -1,83 +1,89 @@
 using Microsoft.AspNetCore.Mvc;
-using WD.Models;
 using WD.Mvc.Models;
-using WD.Repository.Interfaces;
+using WD.Mvc.Services;
 
 namespace WD.Mvc.Controllers;
 
+// Controlador para manejar usuarios (registro, login, logout)
 public class UsuariosController : Controller
 {
-    private readonly IUsuarioRepository _usuarioRepo;
+    private readonly UserService _userService;
 
-    public UsuariosController(IUsuarioRepository usuarioRepo)
+    // Constructor con inyeccion de dependencia del servicio de usuarios
+    public UsuariosController(UserService userService)
     {
-        _usuarioRepo = usuarioRepo;
+        _userService = userService;
     }
 
+    // Vista de registro de usuario
     [HttpGet]
     public IActionResult SignUp()
     {
         return View();
     }
 
+    // Procesa registro de usuario
     [HttpPost]
     public async Task<IActionResult> SignUp(SignUpViewModel model)
     {
+        // Validar datos del modelo
         if (!ModelState.IsValid)
             return View(model);
 
-        var existe = (await _usuarioRepo.GetAllAsync()).Any(u => u.Email == model.Email);
+        // Intentar registrar al usuario usando el servicio
+        var (ok, error) = await _userService.TrySignUpAsync(model);
 
-        if (existe)
+        // Si falla mostrar error en la vista
+        if (!ok)
         {
-            ModelState.AddModelError("Email", "El email ya esta registrado.");
+            ModelState.AddModelError("Email", error ?? "No se pudo registrar el usuario.");
             return View(model);
         }
 
-        var usuario = new Usuario
-        {
-            Nombre = model.Nombre,
-            Email = model.Email,
-            Password = model.Password
-        };
-
-        await _usuarioRepo.AddAsync(usuario);
-
+        // Si todo fue bien redirigir al login
         return RedirectToAction("Login");
     }
 
+    // Vista de inicio de sesion
     [HttpGet]
     public IActionResult Login()
     {
         return View();
     }
 
+    // Procesa inicio de sesion
     [HttpPost]
     public async Task<IActionResult> Login(LoginViewModel model)
     {
+        // Validar datos del modelo
         if (!ModelState.IsValid)
             return View(model);
 
-        var usuario = (await _usuarioRepo.GetAllAsync())
-            .FirstOrDefault(u => u.Email == model.Email && u.Password == model.Password);
+        // Buscar usuario por credenciales
+        var usuario = await _userService.FindByCredentialsAsync(model.Email, model.Password);
 
+        // Si no existe o las credenciales son incorrectas
         if (usuario == null)
         {
-            ModelState.AddModelError(string.Empty, "Email o contrasena incorrectos.");
+            ModelState.AddModelError(string.Empty, "Email o contraseña incorrectos.");
             return View(model);
         }
 
-        HttpContext.Session.SetString("UsuarioId", usuario.IdUsuario.ToString());
-        HttpContext.Session.SetString("UsuarioNombre", usuario.Nombre);
+        // Iniciar sesion (guardar cookies/claims)
+        _userService.SignIn(HttpContext, usuario);
 
+        // Redirigir a la pagina principal
         return RedirectToAction("Index", "Home");
     }
 
+    // Cerrar sesion
     [HttpPost]
     public IActionResult Logout()
     {
-        HttpContext.Session.Clear();
+        // Quitar autenticacion
+        _userService.SignOut(HttpContext);
 
+        // Redirigir al login
         return RedirectToAction("Login", "Usuarios");
     }
 }

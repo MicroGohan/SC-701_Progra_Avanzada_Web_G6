@@ -1,119 +1,121 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using WD.Mvc.Models;
 using WD.Mvc.Services;
 
 namespace WD.Mvc.Controllers
 {
+    // Controlador para manejar favoritos
     public class FavoritesController : Controller
     {
         private readonly FavoritosService _favoritosService;
-        private readonly UserService _userService;
 
-        public FavoritesController(FavoritosService favoritosService, UserService userService)
+        // Constructor con inyeccion de dependencia del servicio de favoritos
+        public FavoritesController(FavoritosService favoritosService)
         {
             _favoritosService = favoritosService;
-            _userService = userService;
         }
 
+        // Vista principal de favoritos
         public async Task<IActionResult> Index(CancellationToken ct = default)
         {
-            var usuarioId = _userService.GetUsuarioId(HttpContext);
-            if (usuarioId is null) return RedirectToAction("Login", "Usuarios");
+            // Llamada al servicio para obtener informacion inicial
+            var (authorized, symbol, model) = await _favoritosService.GetIndexAsync(HttpContext, ct);
 
-            var (units, symbol) = await _userService.GetTemperatureUnitsAsync(HttpContext);
+            // Si no esta autorizado redirige al login
+            if (!authorized) return RedirectToAction("Login", "Usuarios");
+
+            // Pasar simbolo de la unidad de temperatura a la vista
             ViewBag.TempUnitSymbol = symbol;
 
-            var modelo = await _favoritosService.GetFavoritosConClimaAsync(usuarioId.Value, units, ct);
-            return View(modelo);
+            // Enviar el modelo a la vista
+            return View(model);
         }
 
+        // Agregar un nuevo favorito
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Add(string ciudad, string pais, CancellationToken ct)
         {
-            var usuarioId = _userService.GetUsuarioId(HttpContext);
-            if (usuarioId is null)
+            // Llamar al servicio para agregar el favorito
+            var (authorized, agregado, favoritoId, messageAjax, tempHtmlMessage, ultimoFavoritoId, searchQuery)
+                = await _favoritosService.AddAsync(HttpContext, ciudad, pais, ct);
+
+            // Verificar autorizacion
+            if (!authorized)
             {
                 if (IsAjaxRequest(Request))
                     return Unauthorized(new { ok = false, message = "No autorizado" });
                 return RedirectToAction("Login", "Usuarios");
             }
 
-            var (agregado, favorito) = await _favoritosService.TryAddFavoritoAsync(usuarioId.Value, ciudad, pais, ct);
-            var message = agregado
-                ? $"✅ Ciudad {ciudad} ({pais}) agregada a favoritos."
-                : "⚠️ La ciudad ya está en tus favoritos.";
-
+            // Respuesta si la peticion fue Ajax
             if (IsAjaxRequest(Request))
             {
                 return Json(new
                 {
                     ok = agregado,
-                    message,
-                    favoritoId = agregado ? favorito!.IdFavorito : (int?)null
+                    message = messageAjax,
+                    favoritoId = agregado ? favoritoId : (int?)null
                 });
             }
 
+            // Guardar mensajes en TempData para mostrar en la vista
             if (agregado)
             {
-                TempData["FavoritoMensaje"] = $"✅ Ciudad <strong>{ciudad}</strong> del País <strong>{pais}</strong> ha sido agregada a favoritos correctamente.";
-                TempData["UltimoFavoritoId"] = favorito!.IdFavorito;
+                TempData["FavoritoMensaje"] = tempHtmlMessage;
+                TempData["UltimoFavoritoId"] = ultimoFavoritoId;
             }
             else
             {
-                TempData["FavoritoMensaje"] = "⚠️ La ciudad ya está en tus favoritos.";
+                TempData["FavoritoMensaje"] = tempHtmlMessage;
             }
 
-            return RedirectToAction("Index", "Home", new { searchQuery = $"{ciudad}, {pais}" });
+            // Redirigir a la pagina principal con la busqueda
+            return RedirectToAction("Index", "Home", new { searchQuery });
         }
 
+        // Eliminar un favorito
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Delete(int idFavorito, CancellationToken ct)
         {
-            var usuarioId = _userService.GetUsuarioId(HttpContext);
-            if (usuarioId is null) return RedirectToAction("Login", "Usuarios");
+            var (authorized, _, eliminadoMensaje) = await _favoritosService.DeleteAsync(HttpContext, idFavorito, ct);
+            if (!authorized) return RedirectToAction("Login", "Usuarios");
 
-            var ok = await _favoritosService.TryDeleteAsync(usuarioId.Value, idFavorito, ct);
-            TempData["EliminadoMensaje"] = ok
-                ? "✅ El favorito ha sido eliminado correctamente."
-                : "⚠️ Favorito no encontrado.";
-
+            TempData["EliminadoMensaje"] = eliminadoMensaje;
             return RedirectToAction("Index");
         }
 
+        // Actualizar prioridad de un favorito
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> UpdatePrioridad(int idFavorito, string prioridad, CancellationToken ct)
         {
-            var usuarioId = _userService.GetUsuarioId(HttpContext);
-            if (usuarioId is null) return RedirectToAction("Login", "Usuarios");
+            var (authorized, ok, mensaje) = await _favoritosService.UpdatePrioridadAsync(HttpContext, idFavorito, prioridad, ct);
+            if (!authorized) return RedirectToAction("Login", "Usuarios");
 
-            var ok = await _favoritosService.TryUpdatePrioridadAsync(usuarioId.Value, idFavorito, prioridad, ct);
-            if (ok)
+            if (ok && mensaje is not null)
             {
-                TempData["Mensaje"] = $"✅ Prioridad actualizada a <strong>{prioridad}</strong>.";
+                TempData["Mensaje"] = mensaje;
             }
 
             return RedirectToAction("Index");
         }
 
+        // Actualizar descripcion de un favorito
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> UpdateDescripcion(int idFavorito, string descripcion, CancellationToken ct)
         {
-            var usuarioId = _userService.GetUsuarioId(HttpContext);
-            if (usuarioId is null) return RedirectToAction("Login", "Usuarios");
+            var (authorized, ok, descripcionGuardada, favoritoMensaje) = await _favoritosService.UpdateDescripcionAsync(HttpContext, idFavorito, descripcion, ct);
+            if (!authorized) return RedirectToAction("Login", "Usuarios");
 
-            var ok = await _favoritosService.TryUpdateDescripcionAsync(usuarioId.Value, idFavorito, descripcion, ct);
-            TempData["DescripcionGuardada"] = ok
-                ? "✅ Descripción guardada con éxito."
-                : null;
-            if (!ok) TempData["FavoritoMensaje"] = "⚠️ No se pudo agregar la descripción.";
+            TempData["DescripcionGuardada"] = ok ? descripcionGuardada : null;
+            if (!ok) TempData["FavoritoMensaje"] = favoritoMensaje;
 
             return RedirectToAction("Index", "Home");
         }
 
+        // Metodo auxiliar para detectar si la peticion es Ajax
         private static bool IsAjaxRequest(HttpRequest request)
         {
             var xrw = request.Headers["X-Requested-With"].ToString();

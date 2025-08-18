@@ -1,5 +1,6 @@
 namespace WD.Mvc.Models
 {
+    // ViewModel que representa el Top de favoritos de un usuario publico
     public class PublicUserTopViewModel
     {
         public int UsuarioId { get; set; }

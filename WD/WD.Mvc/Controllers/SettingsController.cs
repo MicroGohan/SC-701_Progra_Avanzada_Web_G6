@@ -1,115 +1,93 @@
 using Microsoft.AspNetCore.Mvc;
 using WD.Mvc.Models;
 using WD.Mvc.Services;
-using WD.Repository.Interfaces;
 
 namespace WD.Mvc.Controllers
 {
+    // Controlador para manejar configuraciones de usuario
     public class SettingsController : Controller
     {
-        private readonly IUsuarioRepository _usuarioRepo;
-        private readonly UserService _userService;
+        private readonly SettingsAppService _settingsApp;
 
-        public SettingsController(IUsuarioRepository usuarioRepo, UserService userService)
+        // Constructor con inyeccion de dependencia del servicio
+        public SettingsController(SettingsAppService settingsApp)
         {
-            _usuarioRepo = usuarioRepo;
-            _userService = userService;
+            _settingsApp = settingsApp;
         }
 
+        // Vista principal de configuraciones
         [HttpGet]
         public async Task<IActionResult> Index()
         {
-            var user = await _userService.GetUsuarioActualAsync(HttpContext);
-            if (user == null) return RedirectToAction("Login", "Usuarios");
+            // Obtener configuraciones iniciales del usuario
+            var (authorized, vm, continentes) = await _settingsApp.GetIndexAsync(HttpContext);
 
-            var vm = new UserSettingsViewModel
-            {
-                Nombre = user.Nombre,
-                Email = user.Email,
-                Continente = user.Continente,
-                UnidadTemperatura = string.IsNullOrWhiteSpace(user.UnidadTemperatura) ? "C" : user.UnidadTemperatura,
-                // NUEVO
-                TopFavoritosPublico = user.TopFavoritosPublico
-            };
+            // Si no esta autorizado redirige a login
+            if (!authorized) return RedirectToAction("Login", "Usuarios");
 
-            ViewBag.Continentes = new List<string> { "Africa", "America", "Asia", "Europa", "Oceania" };
+            // Guardar continentes en ViewBag para la vista
+            ViewBag.Continentes = continentes;
+
+            // Renderizar vista con el modelo de configuraciones
             return View(vm);
         }
 
+        // Actualizar perfil del usuario (ej: nombre, correo, continente, etc.)
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> UpdateProfile(UserSettingsViewModel model)
         {
-            var user = await _userService.GetUsuarioActualAsync(HttpContext);
-            if (user == null) return RedirectToAction("Login", "Usuarios");
+            var (ok, error) = await _settingsApp.UpdateProfileAsync(HttpContext, model);
 
-            if (string.IsNullOrWhiteSpace(model.Nombre))
+            // Si falla mostrar mensaje de error y recargar la vista
+            if (!ok)
             {
-                TempData["SettingsError"] = "El nombre es requerido.";
-                ViewBag.Continentes = new List<string> { "Africa", "America", "Asia", "Europa", "Oceania" };
+                TempData["SettingsError"] = error ?? "No se pudo actualizar el perfil.";
+                ViewBag.Continentes = (await _settingsApp.GetIndexAsync(HttpContext)).continentes;
                 return View("Index", model);
             }
 
-            user.Nombre = model.Nombre.Trim();
-            user.Continente = string.IsNullOrWhiteSpace(model.Continente) ? null : model.Continente.Trim();
-            user.UnidadTemperatura = (model.UnidadTemperatura == "F") ? "F" : "C";
-
-            await _usuarioRepo.UpdateAsync(user);
-
-            _userService.RefreshSessionNombre(HttpContext, user.Nombre);
+            // Si fue exitoso mostrar mensaje de confirmacion
             TempData["SettingsMessage"] = "Preferencias actualizadas correctamente.";
             return RedirectToAction("Index");
         }
 
+        // Cambiar la contraseña del usuario
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> ChangePassword(UserSettingsViewModel model)
         {
-            var user = await _userService.GetUsuarioActualAsync(HttpContext);
-            if (user == null) return RedirectToAction("Login", "Usuarios");
+            var (ok, error) = await _settingsApp.ChangePasswordAsync(
+                HttpContext,
+                model.PasswordActual,
+                model.PasswordNuevo,
+                model.PasswordConfirmacion
+            );
 
-            if (string.IsNullOrWhiteSpace(model.PasswordActual) ||
-                string.IsNullOrWhiteSpace(model.PasswordNuevo) ||
-                string.IsNullOrWhiteSpace(model.PasswordConfirmacion))
+            if (!ok)
             {
-                TempData["SettingsError"] = "Complete todos los campos de contraseña.";
+                TempData["SettingsError"] = error ?? "No se pudo actualizar la contraseña.";
                 return RedirectToAction("Index");
             }
-
-            if (!string.Equals(user.Password, model.PasswordActual))
-            {
-                TempData["SettingsError"] = "La contraseña actual es incorrecta.";
-                return RedirectToAction("Index");
-            }
-
-            if (!string.Equals(model.PasswordNuevo, model.PasswordConfirmacion))
-            {
-                TempData["SettingsError"] = "La confirmación no coincide.";
-                return RedirectToAction("Index");
-            }
-
-            user.Password = model.PasswordNuevo;
-            await _usuarioRepo.UpdateAsync(user);
 
             TempData["SettingsMessage"] = "Contraseña actualizada correctamente.";
             return RedirectToAction("Index");
         }
 
-        // NUEVO: cambiar visibilidad del Top 3 sin afectar el resto
+        // Cambiar si el Top de favoritos del usuario es publico o privado
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> UpdateTopPublico(bool TopFavoritosPublico)
         {
-            var user = await _userService.GetUsuarioActualAsync(HttpContext);
-            if (user == null) return RedirectToAction("Login", "Usuarios");
+            var (ok, error, message) = await _settingsApp.UpdateTopPublicoAsync(HttpContext, TopFavoritosPublico);
 
-            user.TopFavoritosPublico = TopFavoritosPublico;
-            await _usuarioRepo.UpdateAsync(user);
+            if (!ok)
+            {
+                TempData["SettingsError"] = error ?? "No se pudo actualizar la visibilidad.";
+                return RedirectToAction("Index");
+            }
 
-            TempData["SettingsMessage"] = TopFavoritosPublico
-                ? "Tu Top 3 ahora es público."
-                : "Tu Top 3 ahora es privado.";
-
+            TempData["SettingsMessage"] = message;
             return RedirectToAction("Index");
         }
     }

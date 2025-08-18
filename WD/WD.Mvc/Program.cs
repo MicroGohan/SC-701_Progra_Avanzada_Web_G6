@@ -25,8 +25,11 @@ builder.Services.AddScoped<IFavoritoRepository, FavoritoRepository>();
 
 // Servicios
 builder.Services.AddSession();
-builder.Services.AddScoped<FavoritosService>();
+builder.Services.AddScoped<FavoritosService>();   
 builder.Services.AddScoped<UserService>();
+builder.Services.AddScoped<PublicTopService>();
+builder.Services.AddScoped<DashboardService>();
+builder.Services.AddScoped<SettingsAppService>(); 
 
 var app = builder.Build();
 

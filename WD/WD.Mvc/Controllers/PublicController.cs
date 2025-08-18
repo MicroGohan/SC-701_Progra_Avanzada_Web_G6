@@ -1,66 +1,54 @@
 using Microsoft.AspNetCore.Mvc;
 using WD.Mvc.Services;
-using WD.Repository.Interfaces;
-using WD.Mvc.Models;
 
 namespace WD.Mvc.Controllers
 {
+    // Controlador para exponer informacion publica (Top favoritos)
     [Route("Public")]
     public class PublicController : Controller
     {
-        private readonly IUsuarioRepository _usuarioRepo;
-        private readonly FavoritosService _favoritosService;
+        private readonly PublicTopService _publicTopService;
 
-        public PublicController(IUsuarioRepository usuarioRepo, FavoritosService favoritosService)
+        // Constructor con inyeccion de dependencia del servicio
+        public PublicController(PublicTopService publicTopService)
         {
-            _usuarioRepo = usuarioRepo;
-            _favoritosService = favoritosService;
+            _publicTopService = publicTopService;
         }
 
+        // Endpoint GET: /Public/Top3/{id}
+        // Muestra el Top 3 de favoritos de un usuario especifico
         [HttpGet("Top3/{id:int?}")]
         [HttpGet("Top3")]
         public async Task<IActionResult> Top3(int? id, CancellationToken ct = default)
         {
+            // Si no se recibe el id se devuelve error 404
             if (id is null) return NotFound("Falta el id de usuario.");
 
-            var usuario = await _usuarioRepo.GetByIdAsync(id.Value);
-            if (usuario is null) return NotFound("Usuario no encontrado.");
-            if (!usuario.TopFavoritosPublico) return Forbid();
+            // Obtener el top 3 desde el servicio
+            var result = await _publicTopService.GetTop3Async(id.Value, ct);
 
-            var units = (usuario.UnidadTemperatura == "F") ? "imperial" : "metric";
-            var symbol = (units == "imperial") ? "°F" : "°C";
-            ViewBag.TempUnitSymbol = symbol;
-            ViewBag.UsuarioNombre = usuario.Nombre;
+            // Validaciones segun el resultado
+            if (!result.ok)
+            {
+                if (result.forbidden) return Forbid(); // No tiene permiso
+                return NotFound(result.error ?? "Usuario no encontrado.");
+            }
 
-            var top3 = await _favoritosService.GetTopFavoritosAsync(usuario.IdUsuario, 3, units, ct);
-            return View(top3);
+            // Pasar datos extra a la vista
+            ViewBag.TempUnitSymbol = result.symbol;       // Simbolo de la unidad de temperatura
+            ViewBag.UsuarioNombre = result.usuarioNombre; // Nombre del usuario dueño del top
+
+            // Renderizar vista con la lista top
+            return View(result.top);
         }
 
-        // Explora Top 3 de todos los usuarios con Top público (sin concurrencia sobre DbContext)
+        // Endpoint GET: /Public/Explore
+        // Permite explorar el Top 3 de todos los usuarios que tienen su Top configurado como publico
+        // Nota: se hace sin concurrencia sobre DbContext para evitar problemas de acceso
         [HttpGet("Explore")]
         public async Task<IActionResult> Explore(CancellationToken ct = default)
         {
-            var usuarios = (await _usuarioRepo.GetAllAsync())
-                .Where(u => u.TopFavoritosPublico)
-                .ToList();
-
-            var model = new List<PublicUserTopViewModel>(usuarios.Count);
-            foreach (var u in usuarios)
-            {
-                var units = (u.UnidadTemperatura == "F") ? "imperial" : "metric";
-                var symbol = (units == "imperial") ? "°F" : "°C";
-                var top = await _favoritosService.GetTopFavoritosAsync(u.IdUsuario, 3, units, ct);
-
-                model.Add(new PublicUserTopViewModel
-                {
-                    UsuarioId = u.IdUsuario,
-                    Nombre = u.Nombre,
-                    Units = units,
-                    UnitSymbol = symbol,
-                    Top = top
-                });
-            }
-
+            var model = await _publicTopService.ExploreAsync(ct);
             return View(model);
         }
     }
