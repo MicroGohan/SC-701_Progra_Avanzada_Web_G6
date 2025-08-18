@@ -32,9 +32,28 @@ namespace WD.Mvc.Controllers
         public async Task<IActionResult> Add(string ciudad, string pais, CancellationToken ct)
         {
             var usuarioId = _userService.GetUsuarioId(HttpContext);
-            if (usuarioId is null) return RedirectToAction("Login", "Usuarios");
+            if (usuarioId is null)
+            {
+                if (IsAjaxRequest(Request))
+                    return Unauthorized(new { ok = false, message = "No autorizado" });
+                return RedirectToAction("Login", "Usuarios");
+            }
 
             var (agregado, favorito) = await _favoritosService.TryAddFavoritoAsync(usuarioId.Value, ciudad, pais, ct);
+            var message = agregado
+                ? $"✅ Ciudad {ciudad} ({pais}) agregada a favoritos."
+                : "⚠️ La ciudad ya está en tus favoritos.";
+
+            if (IsAjaxRequest(Request))
+            {
+                return Json(new
+                {
+                    ok = agregado,
+                    message,
+                    favoritoId = agregado ? favorito!.IdFavorito : (int?)null
+                });
+            }
+
             if (agregado)
             {
                 TempData["FavoritoMensaje"] = $"✅ Ciudad <strong>{ciudad}</strong> del País <strong>{pais}</strong> ha sido agregada a favoritos correctamente.";
@@ -93,6 +112,14 @@ namespace WD.Mvc.Controllers
             if (!ok) TempData["FavoritoMensaje"] = "⚠️ No se pudo agregar la descripción.";
 
             return RedirectToAction("Index", "Home");
+        }
+
+        private static bool IsAjaxRequest(HttpRequest request)
+        {
+            var xrw = request.Headers["X-Requested-With"].ToString();
+            var accept = request.Headers["Accept"].ToString();
+            return string.Equals(xrw, "XMLHttpRequest", StringComparison.OrdinalIgnoreCase)
+                   || accept.Contains("application/json", StringComparison.OrdinalIgnoreCase);
         }
     }
 }

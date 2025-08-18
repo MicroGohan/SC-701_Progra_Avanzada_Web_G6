@@ -57,6 +57,19 @@ namespace WD.Mvc.Controllers
             return View(results);
         }
 
+        [HttpGet]
+        public async Task<IActionResult> TopFavoritosPartial(int count = 3, CancellationToken ct = default)
+        {
+            var usuarioId = _userService.GetUsuarioId(HttpContext);
+            if (usuarioId is null) return Unauthorized();
+
+            var (units, symbol) = await _userService.GetTemperatureUnitsAsync(HttpContext);
+            ViewBag.TempUnitSymbol = symbol;
+
+            var top = await _favoritosService.GetTopFavoritosAsync(usuarioId.Value, count, units, ct);
+            return PartialView("_TopFavoritos", top);
+        }
+
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
         {

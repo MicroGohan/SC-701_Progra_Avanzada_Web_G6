@@ -1,0 +1,110 @@
+@model List<WD.Mvc.Models.FavoritoClimaViewModel>
+@{
+    var unitSymbol = (ViewBag.TempUnitSymbol as string) ?? "°C";
+    var apiUnits = unitSymbol.Contains("F") ? "imperial" : "metric";
+}
+<div class="container mt-3">
+    <h3 class="mb-3 text-warning">Top 3 Favoritos</h3>
+    <div class="row row-cols-1 row-cols-md-3 g-3">
+        @foreach (var fav in Model)
+        {
+            var modalId = $"editarFavModal_{fav.Favorito.IdFavorito}";
+            <div class="col">
+                <div class="card shadow h-100 glass-card" style="border-radius: 15px;">
+                    <div class="card-body">
+                        <h5 class="card-title text-success fw-bold">@fav.Favorito.Ciudad, @fav.Favorito.Pais</h5>
+
+                        @if (!string.IsNullOrWhiteSpace(fav.Favorito.Descripcion))
+                        {
+                            <p class="card-text text-white"><strong>Descripción:</strong> @fav.Favorito.Descripcion</p>
+                        }
+
+                        <div class="mb-2">
+                            @if (fav.Temperatura != null)
+                            {
+                                <span class="me-3"><strong>Temp:</strong> @fav.Temperatura @unitSymbol</span>
+                            }
+                            @if (fav.Humedad != null)
+                            {
+                                <span class="me-3"><strong>Humedad:</strong> @fav.Humedad%</span>
+                            }
+                            @if (!string.IsNullOrWhiteSpace(fav.WeatherDescription))
+                            {
+                                <span class="me-3"><strong>Clima:</strong> @fav.WeatherDescription</span>
+                            }
+                        </div>
+
+                        <div class="d-flex flex-wrap gap-2">
+                            <button type="button"
+                                    class="btn btn-sm btn-primary ver-clima-btn"
+                                    data-ciudad="@fav.Favorito.Ciudad"
+                                    data-pais="@fav.Favorito.Pais"
+                                    data-units="@apiUnits"
+                                    data-bs-toggle="modal"
+                                    data-bs-target="#weatherDetailsModal">
+                                Ver Clima
+                            </button>
+
+                            <button type="button"
+                                    class="btn btn-sm btn-info"
+                                    data-bs-toggle="modal"
+                                    data-bs-target="#@modalId">
+                                Editar
+                            </button>
+
+                            <form asp-controller="Favorites" asp-action="Delete" method="post" class="d-inline delete-fav-form">
+                                @Html.AntiForgeryToken()
+                                <input type="hidden" name="idFavorito" value="@fav.Favorito.IdFavorito" />
+                                <button type="submit" class="btn btn-sm btn-outline-danger">Eliminar</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Modal Editar (Descripción y Prioridad) -->
+            <div class="modal fade" id="@modalId" tabindex="-1" aria-labelledby="@($"{modalId}_label")" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="@($"{modalId}_label")">Editar favorito - @fav.Favorito.Ciudad, @fav.Favorito.Pais</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                        </div>
+                        <div class="modal-body">
+                            <!-- Form Descripción -->
+                            <form asp-controller="Favorites" asp-action="UpdateDescripcion" method="post" class="mb-3">
+                                @Html.AntiForgeryToken()
+                                <input type="hidden" name="idFavorito" value="@fav.Favorito.IdFavorito" />
+                                <div class="mb-2">
+                                    <label class="form-label">Descripción</label>
+                                    <textarea name="descripcion" class="form-control" maxlength="250" required>@fav.Favorito.Descripcion</textarea>
+                                </div>
+                                <button type="submit" class="btn btn-success btn-sm">Guardar descripción</button>
+                            </form>
+
+                            <hr />
+
+                            <!-- Form Prioridad -->
+                            <form asp-controller="Favorites" asp-action="UpdatePrioridad" method="post" class="d-flex align-items-end gap-2">
+                                @Html.AntiForgeryToken()
+                                <input type="hidden" name="idFavorito" value="@fav.Favorito.IdFavorito" />
+                                <div class="flex-grow-1">
+                                    <label class="form-label mb-1">Prioridad</label>
+                                    <select name="prioridad" class="form-select form-select-sm">
+                                        <option value="bajo" selected="@(fav.Favorito.Prioridad == "bajo")">Bajo</option>
+                                        <option value="medio" selected="@(fav.Favorito.Prioridad == "medio")">Medio</option>
+                                        <option value="alto" selected="@(fav.Favorito.Prioridad == "alto")">Alto</option>
+                                    </select>
+                                </div>
+                                <button type="submit" class="btn btn-primary btn-sm">Guardar prioridad</button>
+                            </form>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Cerrar</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>

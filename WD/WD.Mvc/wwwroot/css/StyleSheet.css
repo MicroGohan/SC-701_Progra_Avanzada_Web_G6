@@ -1,5 +1,4 @@
-﻿
-:root {
+﻿:root {
     --lapis-lazuli: #336699;
     --carolina-blue: #86bbd8;
     --light-green: #9ee493;
@@ -15,7 +14,6 @@ body {
     overflow-x: hidden;
     color: white;
 }
-
 
 .hero {
     padding: 80px 20px;
@@ -102,6 +100,12 @@ body {
 #favoritoDuplicadoModal .modal-content,
 #favoritoDuplicadoModal .modal-header,
 #favoritoDuplicadoModal .modal-body,
-#favoritoDuplicadoModal .modal-footer {
-    color: black;
+#favoritoDuplicadoModal .modal-footer { color: black; }
+
+/* NUEVO: Texto negro por defecto en modales (fondo claro) */
+.modal-content,
+.modal-header,
+.modal-body,
+.modal-footer {
+    color: #000;
 }

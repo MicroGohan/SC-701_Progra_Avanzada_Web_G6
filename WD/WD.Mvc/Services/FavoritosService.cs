@@ -14,8 +14,7 @@ namespace WD.Mvc.Services
             _favoritoRepo = favoritoRepo;
             _weatherApi = weatherApi;
         }
-
-
+        /// <summary>
         public async Task<List<FavoritoClimaViewModel>> GetTop5FavoritosAsync(int usuarioId, string units = "metric", CancellationToken ct = default)
         {
             var favoritos = await _favoritoRepo.GetTop5ByUserAsync(usuarioId, ct);
