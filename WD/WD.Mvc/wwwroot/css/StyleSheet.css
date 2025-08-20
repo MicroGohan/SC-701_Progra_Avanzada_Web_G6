@@ -13,6 +13,9 @@ body {
     min-height: 100vh;
     overflow-x: hidden;
     color: white;
+    display: flex;
+    flex-direction: column;
+    min-height:100vh;
 }
 
 .hero {
@@ -73,12 +76,21 @@ body {
 }
 
 .glass-card {
-    background: rgba(255, 255, 255, 0.05); /* transparencia suave */
+    background: rgba(255, 255, 255, 0.05) !important; /* transparencia suave */
     border-radius: 15px;
     backdrop-filter: blur(10px); /* efecto glass */
     -webkit-backdrop-filter: blur(10px);
     border: 1px solid rgba(255, 255, 255, 0.1); /* borde tenue */
     color: white;
+}
+
+html, body {
+    /*height: 100%; */
+    margin: 0; 
+}
+
+main {
+    flex: 1; 
 }
 
 
